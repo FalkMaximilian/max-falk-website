@@ -119,7 +119,7 @@ else:
     if PG_IS_AVAIL:
         DATABASES = {
             'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycosql2',
+                'ENGINE': 'django.db.backends.postgresql',
                 'NAME': PG_DATABASE,
                 'USER': PG_USER,
                 'PASSWORD': PG_PASSWORD,

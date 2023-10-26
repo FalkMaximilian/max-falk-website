@@ -94,9 +94,15 @@ DATABASES = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = str(os.environ.get('DEBUG')) == '1'
+debug_tmp = str(os.environ.get('DEBUG'))
+print(debug_tmp)
+if debug_tmp == 'None':
+    DEBUG = True
+elif debug_tmp == '1':
+    DEBUG = True
+else:
+    DEBUG = False
 
-SECRET_KEY = ')n$3$gzi)g8e&p)o&r+31##e6%mmwi+6iec$p=_5$+_iawns9g'
 if not DEBUG:
     SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 

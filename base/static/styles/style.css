@@ -1,0 +1,52 @@
+html, body {
+    height: 100%;
+}
+
+.min-100 {
+    min-height: 100%;
+}
+
+.flex-fill {
+    flex: 1 1 auto;
+}
+
+.bi {
+    display: inline-block;
+    vertical-align: -.125em;
+    fill: currentColor;
+}
+
+
+
+
+
+.css-selector {
+    background: linear-gradient(15deg, #37d1a9, #fff40d, #ff0d0d, #842ec4);
+    background-size: 800% 800%;
+
+    -webkit-animation: AnimationName 11s ease infinite;
+    -moz-animation: AnimationName 11s ease infinite;
+    -o-animation: AnimationName 11s ease infinite;
+    animation: AnimationName 11s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-moz-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-o-keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@keyframes AnimationName {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}

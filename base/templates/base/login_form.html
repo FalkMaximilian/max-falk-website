@@ -1,0 +1,31 @@
+{% extends 'auth_card_center.html'%}
+
+{% block auth_card_content %}
+<div class='text-center'>
+    <svg class="mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" width="35" height="35"
+        fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+        <path fill-rule="evenodd"
+            d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+    </svg>
+    <h3 class="mb-4">Login</h3>
+</div>
+
+<form action="" method="POST">
+    {% csrf_token %}
+
+    <div class="form-floating mb-3">
+        <input id="floatingInput" class="form-control" name='username' placeholder="Username" />
+        <label for="floatingInput">Username</label>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input type="password" id="floatingPassword" class="form-control" name='password' placeholder="Password" />
+        <label for="floatingPassword">Password</label>
+    </div>
+
+    <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+</form>
+<p class="card-text mb-0 mt-3">Don't have an account yet?</p>
+<a class="btn btn-link btn-lg  p-0 fs-6" href="{% url 'register-user'%}">Register</a>
+{% endblock auth_card_content %}

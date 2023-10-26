@@ -1,0 +1,35 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="row flex-fill g-0">
+    <main class="col p-0">
+        <div class="container min-100 text-center d-flex">
+
+            {% comment %} {% if messages %}
+            <div class="row justify-content-center">
+                <div class="col-10 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4 align-self-center">
+                    {% for message in messages %}
+                    <div class='alert {{message.tags}} alert-dismissible fade show' role="alert">
+                        {{message | safe }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %} {% endcomment %}
+
+            <div class="row row-cols-1 flex-fill justify-content-center">
+
+                <div class="col-10 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4 align-self-center">
+                    <div class="card shadow-2-strong bg-body-secondary" style="border-radius: 1rem;">
+                        <div class="card-body p-lg-4 p-4 text-center">
+                            {% block auth_card_content %}
+                            {% endblock auth_card_content %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock content %}

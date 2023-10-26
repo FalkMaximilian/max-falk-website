@@ -115,6 +115,7 @@ if not DEBUG:
     PG_PASSWORD = os.environ.get("PGPASSWORD")
     PG_HOST = os.environ.get("PGHOST")
     PG_PORT = os.environ.get("PGPORT")
+    PG_SSL = str(os.environ.get("PGSSL"))
 
     PG_IS_AVAIL = all([PG_DATABASE, PG_USER, PG_PASSWORD, PG_HOST, PG_PORT])
 
@@ -129,6 +130,12 @@ if not DEBUG:
                 'PORT': PG_PORT 
             }
         }
+
+    if PG_SSL == 'require':
+        DATABASES['default']['OPTIONS'] = {
+            "sslmode": "require"
+        }
+
 else:
     DJANGO_SUPERUSER_USERNAME = 'admin'
     DJANGO_SUPERUSER_PASSWORD = 'deepthought'

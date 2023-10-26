@@ -22,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-x@7ijqfa8$-!yrl&o)@z9hhai=-bah1z949j+t^px&jw1cfv)d'
+SECRET_KEY = 'django-insecure-x@7ijqfa8$-!yrl&o)@z9hhai=-bah1z949j+t^px&jw1cfv)d'
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['*', 'max-falk-website-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://*', 'https://max-falk-website-production.up.railway.app/*']
 
 # Setting the default tags for messages to make them
 # work well with Bootstrap5
@@ -95,12 +95,9 @@ DATABASES = {
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = str(os.environ.get('DEBUG')) == '1'
+print(DEBUG)
 
-if DEBUG:
-    SECRET_KEY = 'not-a-secret-key'
-    DJANGO_SUPERUSER_USERNAME = 'admin'
-    DJANGO_SUPERUSER_PASSWORD = 'deepthought'
-else:
+if not DEBUG:
     SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
     DJANGO_SUPERUSER_USERNAME = os.environ.get("DJANGO_SUPERUSER_USERNAME")
@@ -126,6 +123,10 @@ else:
                 'PORT': PG_PORT 
             }
         }
+else:
+    SECRET_KEY = 'not-a-secret-key'
+    DJANGO_SUPERUSER_USERNAME = 'admin'
+    DJANGO_SUPERUSER_PASSWORD = 'deepthought'
 
 
 

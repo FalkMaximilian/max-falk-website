@@ -95,8 +95,8 @@ DATABASES = {
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = str(os.environ.get('DEBUG')) == '1'
-print(DEBUG)
 
+SECRET_KEY = ')n$3$gzi)g8e&p)o&r+31##e6%mmwi+6iec$p=_5$+_iawns9g'
 if not DEBUG:
     SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
@@ -124,7 +124,6 @@ if not DEBUG:
             }
         }
 else:
-    SECRET_KEY = 'not-a-secret-key'
     DJANGO_SUPERUSER_USERNAME = 'admin'
     DJANGO_SUPERUSER_PASSWORD = 'deepthought'
 

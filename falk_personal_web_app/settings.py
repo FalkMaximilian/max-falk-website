@@ -127,9 +127,6 @@ else:
                 'PORT': PG_PORT 
             }
         }
-    DATABASES = {
-        'default': dj_database_url.config(default=PG_DATABASE_PRIVATE_URL, conn_max_age=1800)
-    }
 
 
 

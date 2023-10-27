@@ -60,7 +60,7 @@ def logout_user(request):
     logout(request)
     return redirect(HOME)
 
-@login_required(login_url=LOGIN)
+#@login_required(login_url=LOGIN)
 def home_view(request):
     return render(request, 'base/home.html') 
 

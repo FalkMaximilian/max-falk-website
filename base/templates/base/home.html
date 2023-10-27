@@ -4,22 +4,71 @@
 
 {% block content %}
 <div class="container">
-    <div class="row py-4">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    Featured
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
+    <h1 class="my-4 text-center">Hallo!</h1>
+    <p class="fs-4 text-center">Ich bin Maximilian und ich habe diese Website mit den folgenden Technologien gebaut.</p>
+</div>
+
+
+<section class="container-fluid" >
+    <div class="row w-75 mx-auto justify-content-center" id="technologies-row-1">
+        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+            <div style="height: 90px;">
+                <img src="{% static 'images/django-logo-negative.svg' %} " class="my-auto" style="height: 80px;">
+            </div>
+            <div>
+                <h3 class="fs-3 mt-3 pb-1 atext-center">Django</h3>
+                <p class="text-center">Django is a high-level Python web framework that encourages rapid development and clean, pragmatic design.</p>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+            <img src="{% static 'images/python-logo-only.svg' %} " style="height: 90px; width: auto;">
+            <div>
+                <h3 class="fs-3 mt-3 pb-1 text-center">Python</h3>
+                <p class="text-center">Python is a programming language that lets you work quickly and integrate systems more effectively.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+            <img src="{% static 'images/bootstrap-logo.svg' %} " style="height: 90px; width: auto;">
+            <div>
+                <h3 class="fs-3 mt-3 pb-1 text-center">Bootstrap</h3>
+                <p class="text-center">Powerful, extensible, and feature-packed frontend toolkit.</p>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+            <img src="{% static 'images/DO_Logo_icon_blue.svg' %} " style="height: 90px; width: auto;">
+            <div>
+                <h3 class="fs-3 mt-3 pb-1 text-center">DigitalOcean</h3>
+                <p class="text-center">Our mission is to simplify cloud computing so builders can spend more time creating software that changes the world.</p>
             </div>
         </div>
     </div>
-</div>
-<div id="carouselExampleIndicators" class="carousel slide" style="height: 100vh;">
+
+    <div class="row w-75 mx-auto justify-content-center" id="technologies-row-2">
+        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+            <img src="{% static 'images/PostgreSQL_logo.svg' %} " style="height: 90px; width: auto;">
+            <div>
+                <h3 class="fs-3 mt-3 pb-1 text-center">PostgreSQL</h3>
+                <p class="text-center">PostgreSQL is a powerful, open source object-relational database system with over 35 years of active development that has earned it a strong reputation for reliability, feature robustness, and performance. </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+<section style="height: 100vh; position: relative; ">
+    <div class="custom-shape-divider-top-1698420714" style="z-index: 1;">
+    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+    </svg>
+    </div>
+
+    <div id="carouselExampleIndicators" class="carousel slide" style="height: 100vh;">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
             aria-current="true" aria-label="Slide 1"></button>
@@ -53,5 +102,5 @@
         <span class="visually-hidden">Next</span>
     </button>
 </div>
-<h1 class="my-4" style="height: 100vh; text-align: center;">Herzlich Willkommen auf meiner Website!</h1>
+</section>
 {% endblock content %}

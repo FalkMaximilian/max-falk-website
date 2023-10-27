@@ -20,33 +20,24 @@ html, body {
 
 
 
-.css-selector {
-    background: linear-gradient(15deg, #37d1a9, #fff40d, #ff0d0d, #842ec4);
-    background-size: 800% 800%;
 
-    -webkit-animation: AnimationName 11s ease infinite;
-    -moz-animation: AnimationName 11s ease infinite;
-    -o-animation: AnimationName 11s ease infinite;
-    animation: AnimationName 11s ease infinite;
+
+.custom-shape-divider-top-1698420714 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
 }
 
-@-webkit-keyframes AnimationName {
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
+.custom-shape-divider-top-1698420714 svg {
+    position: relative;
+    display: block;
+    width: calc(124% + 1.3px);
+    height: 93px;
 }
-@-moz-keyframes AnimationName {
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-@-o-keyframes AnimationName {
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
-}
-@keyframes AnimationName {
-    0%{background-position:0% 50%}
-    50%{background-position:100% 50%}
-    100%{background-position:0% 50%}
+
+.custom-shape-divider-top-1698420714 .shape-fill {
+    fill: #212529;
 }

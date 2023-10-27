@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-x@7ijqfa8$-!yrl&o)@z9hhai=-bah1z949j+t^px&jw1cfv)d'
 
-ALLOWED_HOSTS = ['falkmaximilian.de', 'www.falkmaximilian.de', 'www.falkmaximilian.com', 'falkmaximilian.com']
+ALLOWED_HOSTS = ['.falkmaximilian.de']
 CSRF_TRUSTED_ORIGINS = ['https://www.falkmaximilian.de/*', 'https://falkmaximilian.de/*', 'https://www.falkmaximilian.com/*', 'https://falkmaximilian.com/*']
 
 # Setting the default tags for messages to make them

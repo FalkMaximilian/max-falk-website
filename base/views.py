@@ -65,6 +65,6 @@ def home_view(request):
     return render(request, 'base/home.html') 
 
 # Give username via the url
-@login_required(login_url=LOGIN)
+#@login_required(login_url=LOGIN)
 def profile_user(request):
     return render(request, 'base/user_profile.html')

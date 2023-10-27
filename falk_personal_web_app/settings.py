@@ -137,6 +137,7 @@ if not DEBUG:
         }
 
 else:
+    ALLOWED_HOSTS.append("*")
     DJANGO_SUPERUSER_USERNAME = 'admin'
     DJANGO_SUPERUSER_PASSWORD = 'deepthought'
 

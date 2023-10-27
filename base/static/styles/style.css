@@ -41,3 +41,10 @@ html, body {
 .custom-shape-divider-top-1698420714 .shape-fill {
     fill: #212529;
 }
+
+
+.glow-card {
+    -webkit-box-shadow:0px 0px 105px 45px rgba(46,130,255,0.9);
+    -moz-box-shadow: 0px 0px 105px 45px rgba(46,130,255,0.9);
+    box-shadow: 0px 0px 105px 45px rgba(46,130,255,0.9);
+}

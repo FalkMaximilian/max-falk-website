@@ -117,3 +117,13 @@ body {
 .mybox:nth-child(even) > p {
     text-align: right;
 }
+
+.mybox:nth-child(odd) {
+    padding-right: 0px;
+    padding-left: 48px;
+}
+
+.mybox:nth-child(even) {
+    padding-right: 48px;
+    padding-left: 0px;
+}

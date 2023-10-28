@@ -74,6 +74,7 @@ body {
     left: 0px;
     top: -5px;
     bottom: -5px;
+    width: 40%;
     border-width: 5px 0 5px 5px;
     border-radius: 50px 0 0 50px;
 }
@@ -83,6 +84,7 @@ body {
     right: 0;
     top: 0;
     bottom: 0;
+    width: 60%;
     border-width: 5px 5px 5px 0;
     border-radius: 0 50px 50px 0;
 }
@@ -90,8 +92,9 @@ body {
 
 /* Removing the border if it is the first card */
 .mybox:first-child::before {
-    border-top: 0;
-    border-top-left-radius: 0;
+    border-top-width: 30%;
+    /* border-top: 0; */
+    /* border-top-left-radius: 0; */
 }
 
 /* Removing the border if it is the last card  and it's odd */
@@ -126,4 +129,21 @@ body {
 .mybox:nth-child(even) {
     padding-right: 48px;
     padding-left: 0px;
+}
+
+.pseudo-line {
+    position: relative;
+    padding-bottom: 50px;
+}
+
+.pseudo-line::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 17%;
+    height: 50px;
+    width: 33%;
+    border-right: 5px solid #fa7268;
+    border-bottom: 5px solid #fa7268;
+    border-bottom-right-radius: 25px;
 }

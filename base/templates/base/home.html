@@ -33,9 +33,9 @@
   </div>
 </section> -->
 
-<section class="container-fluid">
+<section class="container-fluid pb-5">
     <div class="row w-75 mx-auto justify-content-center" id="technologies-row-1">
-        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+        <div class="col-lg-3 col-md-6 col-sm-12 my-4 text-center">
             <div style="height: 90px">
                 <img src="{% static 'images/django-logo-negative.svg' %} " class="my-auto" style="height: 90px" />
             </div>
@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+        <div class="col-lg-3 col-md-6 col-sm-12 my-4 text-center">
             <img src="{% static 'images/python-logo-only.svg' %} " style="height: 90px; width: auto" />
             <div>
                 <h3 class="fs-3 mt-3 pb-1 text-center">Python</h3>
@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+        <div class="col-lg-3 col-md-6 col-sm-12 my-4 text-center">
             <img src="{% static 'images/bootstrap-logo.svg' %} " style="height: 90px; width: auto" />
             <div>
                 <h3 class="fs-3 mt-3 pb-1 text-center">Bootstrap</h3>
@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+        <div class="col-lg-3 col-md-6 col-sm-12 my-4 text-center">
             <img src="{% static 'images/DO_Logo_icon_blue.svg' %} " style="height: 90px; width: auto" />
             <div>
                 <h3 class="fs-3 mt-3 pb-1 text-center">DigitalOcean</h3>
@@ -82,7 +82,7 @@
     </div>
 
     <div class="row w-75 mx-auto justify-content-center" id="technologies-row-2">
-        <div class="col-lg-3 col-md-6 col-sm-12 my-5 text-center">
+        <div class="col-lg-3 col-md-6 col-sm-12 my-4 text-center">
             <img src="{% static 'images/PostgreSQL_logo.svg' %} " style="height: 90px; width: auto" />
             <div>
                 <h3 class="fs-3 mt-3 pb-1 text-center">PostgreSQL</h3>
@@ -97,14 +97,70 @@
     </div>
 </section>
 
-<section style="height: 100vh; position: relative">
-    <div class="custom-shape-divider-top-1698420714" style="z-index: 1">
+<section class="container w-75 justify-content-center">
+    <h1 class="fs-1 text-center">Über mich</h1>
+
+    <section class="mx-auto mybox">
+        <div class="card mx-auto" style="max-width: 540px">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{% static 'images/max.jpeg' %}" class="img-fluid rounded-start" alt="..." />
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">Maximilian Falk</h5>
+                        <p class="card-text">
+                            Krassester Typ on planet earth.
+                        </p>
+                        <p class="card-text">
+                            <small class="text-body-secondary">Slay</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="mybox px-5">
+        <h1 class="fs-3">Apple Inc.</h1>
+        <h2 class="fs-4">Specialist</h2>
+        <ul class="px-3 pt-3 fs-5">
+            <li>Fähigkeit, in einer sehr aktiven Umgebung für ein außergewöhnliches Kundenerlebnis zu sorgen, sowie Freude am Umgang mit Menschen.</li>
+            <li>Starkes Interesse an Technologie, insbesondere an Apple Produkten, und schnelle Auffassungsgabe beim Kennenlernen neuer Produkte und Features.</li>
+            <li>Starke Kommunikationsfähigkeiten, Selbstsicherheit beim freien Sprechen vor kleinen Gruppen sowie vor Einzelpersonen.</li>
+        </ul>
+        <p class="pt-3">Nov. 2021 - Aug. 2023</p>
+        <!-- <h1 class="fs-3">Apple Inc.</h1> -->
+        <!-- <h2 class="fs-4">Sales Specialist</h2> -->
+    </div>
+    <div class="mybox px-5">
+        <h1 class="fs-3">Höfinger und Maller</h1>
+        <h2 class="fs-4">Produktionshelfer</h2>
+        <p class="pt-3 fs-5">Produktionsunterstützung in der Füllerei und Aushilfe bei der Auslieferung an Kunden im Rahmen eines Ferialpraktikums</p>
+        <p class="fs-6 pt-3">Jun 2018 - Sep 2018</p>
+    </div>
+    <div class="mybox px-5">
+        <h1 class="fs-3">WiewerK</h1>
+        <h2 class="fs-4">Aushilfe</h2>
+        <p class="pt-3 fs-5">Unterstützung bei Planung, Auf- und Abbau und technischer Betreuung von Veranstaltungen.</p>
+        <p class="fs-5">Licht-, Ton – und medientechnische Unterstützung</p>
+        <p class="fs-6 pt-3">Aug. 2016 - Jun. 2018</p>
+
+    </div>
+</section>
+
+<!-- <div style="z-index: 1; margin-top: -600px;">
+    <img src="{% static 'images/lwh.svg' %}" style="width: 100%;">
+</div> -->
+
+<section style="height: 100vh; position: relative; margin-top: 0px;">
+    <!-- <div class="custom-shape-divider-top-1698420714" style="z-index: 1">
         <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path
                 d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
                 class="shape-fill"></path>
         </svg>
-    </div>
+    </div> -->
 
     <div id="carouselExampleIndicators" class="carousel slide" style="height: 100vh">
         <div class="carousel-indicators">

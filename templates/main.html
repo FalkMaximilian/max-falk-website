@@ -21,6 +21,21 @@
     <!-- style="background-color: #001220;" -->
     {% include 'navbar.html'%}
 
+    {% if messages %}
+    <div class="container-fluid">
+        <div class="row justify-content-center pt-3">
+            <div class="col-10 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4 align-self-center">
+                {% for message in messages %}
+                <div class='alert {{message.tags}} alert-dismissible fade show' role="alert">
+                    {{message | safe }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {% block content %}
     {% endblock content %}
 

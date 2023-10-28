@@ -1,15 +1,10 @@
+
 html,
 body {
-    height: 100%;
-    /* background-color: #001220; */
-}
-
-.min-100 {
-    min-height: 100%;
-}
-
-.flex-fill {
-    flex: 1 1 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
 .bi {

@@ -98,9 +98,11 @@ DATABASES = {
 debug_tmp = str(os.environ.get('DEBUG'))
 print(debug_tmp)
 if debug_tmp == 'None':
+    ALLOWED_HOSTS += '*'
     DEBUG = True
 elif debug_tmp == '1':
     DEBUG = True
+    ALLOWED_HOSTS += '*'
 else:
     DEBUG = False
 

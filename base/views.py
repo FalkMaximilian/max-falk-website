@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 
 from .forms import RegisterUserForm
 
-HOME = 'home'
-LOGIN = 'login-user'
+HOME = 'Base:home'
+LOGIN = 'Base:login-user'
 
 def __check_user_and_register(request):
     try:
@@ -39,13 +39,15 @@ def register_user(request):
     register_form = RegisterUserForm()
 
     if request.method == 'POST':
-        __check_user_and_register(request)
+        url = __check_user_and_register(request)
+        if url != None:
+            return url
 
     context = {'form': register_form}
     return render(request, 'base/register_form.html', context) 
 
 
-def __check_creds_and_login(request):
+def __check_creds_and_login(request, next):
     username = request.POST.get('username').lower()
     password = request.POST.get('password')
 
@@ -59,19 +61,26 @@ def __check_creds_and_login(request):
     if user is not None:
         del password
         login(request, user)
-        return redirect(HOME)
+        if next == None:
+            return redirect(HOME)
+        else:
+            return HttpResponseRedirect(next)
     else:
         messages.warning(request, 'Wrong password!')
         return
 
 def login_user(request):
 
+    next = request.GET.get('next', None)
+
     if request.user.is_authenticated:
         return redirect(HOME)
 
     if request.method == 'POST':
-        __check_creds_and_login(request)
-
+        url = __check_creds_and_login(request, next)
+        if url != None:
+            return url
+        
     return render(request, 'base/login_form.html', {})
 
 @login_required(login_url=LOGIN)
@@ -84,6 +93,6 @@ def home_view(request):
     return render(request, 'base/home.html') 
 
 # Give username via the url
-#@login_required(login_url=LOGIN)
+@login_required(login_url=LOGIN)
 def profile_user(request):
     return render(request, 'base/user_profile.html')

@@ -1,5 +1,182 @@
 {% extends 'main.html'%}
 
+{% load static %}
+
 {% block content %}
-<h1>Nice ein Bausparvertrag!</h1>
+<div class="container-fluid sidebar-layout">
+    <aside id="sidebar">
+        <div class="offcanvas-lg offcanvas-start" tabindex="-1" id="offcanvasResponsive"
+            aria-labelledby="offcanvasResponsiveLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasResponsiveLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss='offcanvas'
+                    data-bs-target='#offcanvasResponsive' aria-label="close"></button>
+            </div>
+            <div id='offcanvasBody' class="offcanvas-body p-2 pt-lg-4 px-lg-3 vstack">
+                <div class="container-fluid pb-2 hstack">
+                    <h1 class="me-2 my-0">Your lists</h1>
+                    <a class="ms-auto fs-5 icon-link text-decoration-none" data-bs-toggle="modal"
+                    data-bs-target="#newListModal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                      </svg>New list</a>
+                    
+                </div>
+                <div class="container {% if not lists %}text-center{% endif %}">
+                    {% if lists %}
+                    <nav class="nav flex-column nav-pills">
+                        {% for list in lists %}
+                        <li class="nav-item hstack rounded  my-1 {% if activepk == list.pk %}bg-primary{% else %}bg-body-tertiary{% endif %}">
+                            <a class="nav-link text-break fs-5 me-2 {% if activepk == list.pk %}text-light{% endif %}"
+                                href="{% url 'Todolist:todo-list-view' list.pk %}" style="overflow-wrap: break-word;">{{list.title}}</a>
+                            <a class="text-body-tertiary icon-link ms-auto me-2 fs-3" href="{% url 'Todolist:todo-deletelist' list.pk %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                              </svg></a>
+                        </li>
+                        {% endfor %}
+                    </nav>
+                    {% else %}
+                    <h3>No lists yet!</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </aside>
+    <main>
+        <div class="container-fluid pt-4">
+            <div class="hstack mb-3">
+                <a type="button" class="text-primary me-2 d-lg-none" data-bs-toggle="offcanvas" aria-controls="offcanvasResponsive"
+                data-bs-target="#offcanvasResponsive">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                  </svg>
+                </a>
+                <h1 class="m-0 d-block text-truncate">{{selected_list.title}}</h1>
+                <a class="ms-auto" data-bs-toggle="modal" data-bs-target="#newTaskModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                      </svg>
+                </a>
+            </div>
+            {% if tasks %}
+            <div class="container-fluid p-0" id="tasks">
+                {% for task in tasks %}
+                <div class="hstack task-container rounded bg-body-tertiary p-3 my-2">
+                    {% if task.status %}
+                    <form action="{% url 'Todolist:todo-togglestatus-task' selected_list.pk task.pk %}" method="POST">
+                        {% csrf_token %}
+                        <input type="image" src="{% static 'images/check-circle-fill.svg' %}" alt="Submit"
+                            style="width: 24px; height: 24px;">
+                    </form>
+                    {% else %}
+                    <form action="{% url 'Todolist:todo-togglestatus-task' selected_list.pk task.pk %}" method="POST">
+                        {% csrf_token %}
+                        <input type="image" src="{% static 'images/circle.svg' %}" alt="Submit"
+                            style="width: 24px; height: 24px;">
+                    </form>
+                    {% endif %}
+                    <div class="ps-3 pe-4 taskdescription">
+                        <h1 class="m-0 pb-2 fs-5 tasktitle {% if task.status %}text-decoration-line-through{% endif %} ">{{task.title}}</h1>
+                        <p class="m-0 {% if task.status %}text-decoration-line-through{% endif %}">{{task.description}}</p>
+                    </div>
+                    <!-- <a class="ms-auto me-2" href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path
+                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path fill-rule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                        </svg>
+                    </a> -->
+                    <a class="text-danger ms-auto" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                        data-bs-taskid="{{task.pk}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                            <path
+                                d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.524a.5.5 0 0 0-.524.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.524ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z" />
+                        </svg></a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+
+    <!-- Modals -->
+    <!-- New List Modal -->
+    <form action="{% url 'Todolist:todo-newlist' %}" method="POST">
+        {% csrf_token %}
+        <div class="modal" id="newListModal" tabindex="-1" aria-labelledby="newListModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Create new list</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-floating">
+                            <input id="floatingInput" class="form-control" name='list-name' placeholder="name"
+                                required />
+                            <label for="floatingInput">List name</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" value="SUBMIT" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Delete Task Modal-->
+    <div class="modal" id="deleteModal" tabindex="-1" aria-labelledby="deleteTaskLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 text-danger">Delete</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="delete-modal-message" class="m-0"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="" role="button" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New task Modal -->
+    <form action="{% url 'Todolist:todo-newtask' selected_list.pk %}" method="POST">
+        {% csrf_token %}
+        <div class="modal" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Create new task</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-floating mb-2">
+                            <input id="floatingInputName" class="form-control" name='task-name' placeholder="name"
+                                required />
+                            <label for="floatingInputName">Task name</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea id="floatingInputDesc" class="form-control" name='task-description' placeholder="description" style="height: 100px;"></textarea>
+                            <label for="floatingInputDesc">Task description</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" value="SUBMIT" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script src="{% static 'js/delete_modal.js' %}"></script>
 {% endblock content %}

@@ -1,9 +1,10 @@
-
 html,
 body {
-    min-height: 100vh;
+    /* min-height: 100vh; */
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
+    min-height: 100%;
 }
 
 .bi {
@@ -111,7 +112,7 @@ body {
     text-align: right;
 }
 
-.mybox:nth-child(even) > p {
+.mybox:nth-child(even)>p {
     text-align: right;
 }
 
@@ -140,4 +141,55 @@ body {
     border-right: 5px solid #fa7268;
     border-bottom: 5px solid #fa7268;
     border-bottom-right-radius: 25px;
+}
+@media (max-width: 399px) {
+    #offcanvasResponsive {
+        border-right-color: rgb(33, 37, 41);
+    }
+}
+
+@media (min-width: 992px) {
+    .sidebar-layout {
+        display: grid;
+        grid-template-areas: 'sidebar main';
+        grid-template-columns: 1fr 6fr;
+    }
+
+    #sidebar {
+        border-right-color: rgba(255, 255, 255, 0.15);
+        border-right-width: 1px;
+        border-right-style: solid;
+    }
+}
+
+.icon {
+    height: 28px;
+    width: 28px;
+    mask-size: cover;
+}
+
+.task-container {
+    text-decoration: none;
+}
+
+.task-container > .icon {
+    mask: url(../images/circle.svg);
+    mask-size: cover;
+    background-color: white;
+    min-width: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+.checked {
+    text-decoration: line-through;
+}
+
+.checked > .icon {
+    mask: url(../images/check-circle-fill.svg);
+    mask-size: cover;
+    background-color: lightseagreen;
+    min-width: 24px;
+    width: 24px;
+    height: 24px;
 }

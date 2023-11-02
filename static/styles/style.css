@@ -152,13 +152,14 @@ body {
     .sidebar-layout {
         display: grid;
         grid-template-areas: 'sidebar main';
-        grid-template-columns: 1fr 6fr;
+        grid-template-columns: 1fr 5fr;
     }
 
     #sidebar {
         border-right-color: rgba(255, 255, 255, 0.15);
         border-right-width: 1px;
         border-right-style: solid;
+        width: 380px;
     }
 }
 

@@ -3,6 +3,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 
+from rest_framework.decorators import api_view, authentication_classes
+from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication
+
+from .serializers import TaskSerializer, TodoListSerializer
 from .models import *
 
 HOME = 'Todolist:todo-home'
@@ -122,3 +127,73 @@ def todo_newtask(request, listpk):
         return HttpResponseRedirect('/todo/{}/'.format(listpk))
     
     return redirect(HOME)
+
+
+
+@api_view(['GET'])
+def api_tasks(request):
+    tasks = Task.objects.filter(list__owner = request.user)
+    serializer = TaskSerializer(tasks, many = True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def api_list_list(request):
+    lists = TodoList.objects.filter(owner=request.user)
+    serializer = TodoListSerializer(lists, many = True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def api_task_list(request, listpk):
+    tasks = Task.objects.filter(list = listpk)
+    serializer = TaskSerializer(tasks, many = True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def api_task_detail(request, taskpk):
+    task = Task.objects.get(pk=taskpk)
+    serializer = TaskSerializer(task, many=False)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def api_task_create(request):
+    serializer = TaskSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+    
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def api_task_update(request, taskpk):
+    task = Task.objects.get(pk=taskpk)
+    serializer = TaskSerializer(instance=task, data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def api_task_delete(request, taskpk):
+    task = Task.objects.get(pk=taskpk)
+    task.delete()
+
+    return Response("Task successfully deleted!")
+
+@api_view(['POST'])
+def api_list_create(request):
+    serializer = TodoListSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+    
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def api_list_delete(request, listpk):
+    list_to_del = TodoList.objects.get(pk=listpk)
+    list_to_del.delete()
+
+    return Response('List was deleted!')

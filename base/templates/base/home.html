@@ -159,7 +159,24 @@
     <img src="{% static 'images/lwh.svg' %}" style="width: 100%;">
 </div> -->
 
-<section style="height: 100vh; position: relative; margin-top: 0px;">
+<section class="container-fluid w-100 p-3 bg-body-tertiary" style="z-index: 1;">
+    <div class="card text-center">
+        <div class="card-header">
+          Featured
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">My Todo-List Is Live!</h5>
+          <p class="card-text">It is an early version that still lacks <code>js/ajax</code> and is a little slow still but that will be changed!</p>
+          <a href="todo/" class="btn btn-primary">Start your own list!</a>
+        </div>
+        <div class="card-footer text-body-secondary">
+            {{timestamp}}
+        </div>
+      </div>
+</section>
+
+
+<section style="height: 100vh; position: relative; margin-top: 0px">
     <!-- <div class="custom-shape-divider-top-1698420714" style="z-index: 1">
         <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path

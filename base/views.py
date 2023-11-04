@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 
+from datetime import datetime
+
 from .forms import RegisterUserForm
 
 HOME = 'Base:home'
@@ -90,7 +92,8 @@ def logout_user(request):
 
 #@login_required(login_url=LOGIN)
 def home_view(request):
-    return render(request, 'base/home.html') 
+    context = {'timestamp': datetime(year=2023, month=11, day=4, hour=11, minute=40)}
+    return render(request, 'base/home.html', context=context) 
 
 # Give username via the url
 @login_required(login_url=LOGIN)

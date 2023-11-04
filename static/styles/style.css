@@ -159,6 +159,7 @@ body {
         border-right-color: rgba(255, 255, 255, 0.15);
         border-right-width: 1px;
         border-right-style: solid;
+        width: 380px;
     }
 }
 

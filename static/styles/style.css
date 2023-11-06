@@ -194,3 +194,15 @@ body {
     width: 24px;
     height: 24px;
 }
+
+.checked-green {
+    color: lightseagreen;
+}
+
+.select-list-item {
+    overflow-wrap: break-word;
+}
+
+.no-tasks {
+    height: 100%;
+}

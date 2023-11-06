@@ -4,11 +4,12 @@ from django.contrib.auth.models import User
 class TodoList(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='todolist_owner')
     participants = models.ManyToManyField(User, related_name='todolist_participants')
-    title = models.CharField(max_length=50, null=False, unique=True)
+    title = models.CharField(max_length=50, null=False)
 
     class Meta:
         verbose_name = "todo list"
         verbose_name_plural = verbose_name + "s"
+        unique_together = ['owner', 'title']
 
     def __str__(self):
         return str(self.owner) + "'s list " + str(self.title)

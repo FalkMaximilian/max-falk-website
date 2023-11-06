@@ -1,4 +1,8 @@
-const base_url = "http://127.0.0.1:8000/todo/api/";
+const base_url = "http://192.168.1.117:8000/todo/api/";
+
+
+const lists_wrapper = document.getElementById("lists-wrapper");
+const tasks_wrapper = document.getElementById('tasks');
 
 const deleteModal = document.getElementById("deleteModal");
 
@@ -16,6 +20,90 @@ if (deleteModal) {
         confirmButton.href = `delete-task/${taskid}/`;
     });
 }
+
+function setActiveList(list_elem, new_id) {
+    let current_active = document.querySelector(".active-list-item");
+    current_active.classList.remove("active-list-item");
+    current_active.classList.remove("bg-primary");
+    current_active.classList.add("bg-body-tertiary");
+
+    list_elem.classList.add("active-list-item");
+    list_elem.classList.remove("bg-body-tertiary");
+    list_elem.classList.add("bg-primary");
+
+    active_list = new_id;
+}
+
+
+function addListToDom(i) {
+    // Container for list item
+    let list_elem = document.createElement('div');
+    list_elem.classList.add('nav-item', 'hstack', 'rounded', 'my-1', 'w-100', 'list-elem');
+    list_elem.setAttribute('list-id', String(lists[i].id));
+
+    // List label button
+    let list_title_btn = document.createElement('button');
+    list_title_btn.classList.add('nav-link', 'text-break', 'fs-5', 'me-2', 'text-light', 'select-list-item');
+    list_title_btn.innerHTML = lists[i].title;
+    list_elem.appendChild(list_title_btn);
+
+    // List delete button
+    let list_delete_btn = document.createElement('button');
+    list_delete_btn.classList.add('btn', 'p-0', 'text-body-tertiary', 'icon-link', 'ms-auto', 'me-2', 'fs-3', 'list-del-btn');
+    list_delete_btn.type = 'button';
+    list_delete_btn.innerHTML = cross_svg;
+    list_elem.appendChild(list_delete_btn);
+
+    if (active_list == lists[i].id) {
+        list_elem.classList.add('bg-primary', 'active-list-item');
+        loadTasks(active_list);
+    } else if (active_list == -1) {
+        list_elem.classList.add('bg-primary', 'active-list-item');
+        active_list = lists[i].id;
+        loadTasks(active_list);
+    } else {
+        list_elem.classList.add('bg-body-tertiary');
+    }
+
+    lists_wrapper.appendChild(list_elem);
+    return list_elem;
+}
+
+const new_list_modal = document.getElementById('newListModal');
+if (new_list_modal) {
+
+    new_list_modal.addEventListener('show.bs.modal', (event) => {
+    });
+
+
+    new_list_modal.addEventListener('click', (event) => {
+        let clicked = event.target;
+        if (clicked.id == 'newListModalSubmitBtn') {
+            let list_title_input = document.getElementById('newListTitleInput');
+            let new_list_title = String(list_title_input.value);
+            console.log(new_list_title);
+
+            fetch((base_url + 'list-create/'), {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'X-CSRFToken': csrf_token,
+                },
+                body: JSON.stringify({'title': new_list_title})
+            }).then((resp) => {
+                resp.json().then( parsed_val => {
+                    // Add to DOM and to lists array
+                    if (resp.ok) {
+                        setActiveList(addListToDom(lists.push(parsed_val) - 1), Number(parsed_val.id));
+                    }
+                    console.log('COOOOOL!: ', parsed_val)
+                    console.log('COOOOOL!: ', resp.status)
+                })
+            })
+        }
+    });
+}
+
 
 var active_list = -1;
 
@@ -36,7 +124,12 @@ function getCookie(name) {
 
 var csrf_token = getCookie('csrftoken');
 
-function buildList() {
+var lists = [];
+var tasks = [];
+
+let cross_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
+
+function loadLists() {
     const lists_wrapper = document.getElementById("lists-wrapper");
 
     const lists_url = base_url + "list-list/";
@@ -44,43 +137,24 @@ function buildList() {
     fetch(lists_url)
         .then((resp) => resp.json())
         .then(function (data) {
-            console.log("Data: ", data);
+            console.log("loadLists JSON Data: ", data);
 
-            var list_list = data;
-            for (var i in list_list) {
-                var item = `
-                <div class="nav-item hstack rounded my-1 bg-body-tertiary w-100">
-                    <button class="nav-link text-break fs-5 me-2 text-light select-list-item" style="overflow-wrap: break-word;" list-id="${list_list[i].id}">${list_list[i].title}</button>
-                    <button type="button" class="btn p-0 text-body-tertiary icon-link ms-auto me-2 fs-3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                        </svg>
-                    </button>
-                </div>
-            `;
-
-                if (active_list === -1) {
-                    item = `
-                    <div class="nav-item hstack rounded my-1 bg-primary w-100 active-list-item">
-                        <button class="nav-link text-break fs-5 me-2 text-light select-list-item" style="overflow-wrap: break-word;" list-id="${list_list[i].id}">${list_list[i].title}</button>
-                        <button type="button" class="btn p-0 text-body-tertiary icon-link ms-auto me-2 fs-3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                            </svg>
-                        </button>
-                    </div>
-                `;
-                    active_list = list_list[i].id;
-                    loadTasks(active_list);
-                }
-
-                lists_wrapper.innerHTML += item;
+            lists = data;
+            for (var i in lists) {
+                addListToDom(i);
             }
-
-
         });
 }
 
 let checked_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>';
 let unchecked_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>';
+
+function emptyClass(item) {
+    var class_list = item.classList;
+    while (class_list.length > 0) {
+        class_list.remove(class_list.item(0));
+    }
+}
 
 function loadTasks(listid) {
     const tasks_wrapper = document.getElementById("tasks");
@@ -93,6 +167,29 @@ function loadTasks(listid) {
             console.log("Task Data: ", data);
 
             var task_list = data;
+
+            if (task_list.length == 0) {
+
+                emptyClass(tasks_wrapper);
+                tasks_wrapper.classList.add('d-flex', 'align-items-center', 'no-tasks');
+
+                let container_div = document.createElement('div');
+                container_div.classList.add('container');
+                tasks_wrapper.appendChild(container_div);
+
+                let title = document.createElement('h3');
+                title.classList.add('text-center', 'text-body', 'mb-3');
+                title.innerHTML = "You do not have any tasks in this list yet!";
+                container_div.appendChild(title);
+
+                return;
+            }
+
+            if (tasks_wrapper.classList.contains('no-tasks')) {
+                emptyClass(tasks_wrapper);
+                tasks_wrapper.classList.add('container-fluid', 'p-0', 'px-3');
+            }
+
             for (var i in task_list) {
                 let task_elem = document.createElement("div");
                 task_elem.classList.add(
@@ -146,7 +243,7 @@ function loadTasks(listid) {
 
                 // Change style depending on status
                 if (task_list[i].status) {
-                    checked.classList.add("text-success");
+                    checked.classList.add("checked-green");
                     checked.innerHTML = checked_svg;
                     checked.setAttribute('status', 'true');
                     task_elem.classList.add('text-decoration-line-through');
@@ -160,7 +257,7 @@ function loadTasks(listid) {
         });
 }
 
-buildList();
+loadLists();
 
 
 function toggleTaskStatus(checkmark_div, taskid) {
@@ -171,19 +268,23 @@ function toggleTaskStatus(checkmark_div, taskid) {
         checkmark_div.setAttribute('status', 'false');
         checkmark_div.parentElement.classList.remove('text-decoration-line-through')
         checkmark_div.innerHTML = unchecked_svg;
-        checkmark_div.classList.remove('text-success');
+        checkmark_div.classList.remove('checked-green');
     } else {
         checkmark_div.setAttribute('status', 'true');
         checkmark_div.parentElement.classList.add('text-decoration-line-through');
         checkmark_div.innerHTML = checked_svg;
-        checkmark_div.classList.add('text-success');
+        checkmark_div.classList.add('checked-green');
     }
 
 
 }
 
+function selectList(item) {
 
-const tasks_wrapper = document.getElementById('tasks');
+}
+
+
+
 tasks_wrapper.addEventListener('click', (event) => {
     let clicked = event.target;
 
@@ -197,28 +298,63 @@ tasks_wrapper.addEventListener('click', (event) => {
     }
 });
 
-const lists = document.getElementById("lists-wrapper");
-lists.addEventListener("click", (event) => {
-    var clicked = event.target;
+function deleteList(list_elem, listid) {
+    console.log('Delete list with id: ', listid);
 
-    if (clicked.classList.contains("select-list-item")) {
-        let new_active_list = Number(clicked.getAttribute("list-id"));
-        if (new_active_list != active_list) {
-            while (tasks_wrapper.firstChild) {
-                tasks_wrapper.removeChild(tasks_wrapper.lastChild);
+    fetch((base_url + 'list-delete/' + String(listid) + '/'), {
+        method: 'DELETE',
+        headers: {
+            'Content-type': 'application/json',
+            'X-CSRFToken': csrf_token,
+        },
+
+    }).then((response) => {
+        if (response.ok) {
+            lists_wrapper.removeChild(list_elem);
+
+            for (var i in lists) {
+                if (lists[i].id == listid) {
+                    lists.splice(i, 1);
+                    console.log(lists);
+                    break;
+                }
             }
 
-            let current_active = document.querySelector(".active-list-item");
-            current_active.classList.remove("active-list-item");
-            current_active.classList.remove("bg-primary");
-            current_active.classList.add("bg-body-tertiary");
-
-            clicked.parentElement.classList.add("active-list-item");
-            clicked.parentElement.classList.remove("bg-body-tertiary");
-            clicked.parentElement.classList.add("bg-primary");
-
-            active_list = new_active_list;
-            loadTasks(active_list);
+            // CHECK IF LISTS IS NOW EMPTY.
         }
+    })
+}
+
+lists_wrapper.addEventListener("click", (event) => {
+    var clicked = event.target;
+
+    var closest_list_elem = clicked.closest('.list-elem');
+    if (!closest_list_elem) {
+        console.log('clicked outside of list elem');
+        return;
     }
+
+    let selected_list_id = Number(closest_list_elem.getAttribute('list-id'));
+
+    var closest_del_btn = clicked.closest('.list-del-btn');
+    if (closest_del_btn) {
+        deleteList(closest_list_elem, selected_list_id);
+        console.log('DELETE LIST ELEM!', selected_list_id);
+        return;
+    }
+
+    // Normal list selection
+    if (selected_list_id == active_list) {
+        console.log('Same list!');
+        return;
+    }
+
+    while (tasks_wrapper.firstChild) {
+        tasks_wrapper.removeChild(tasks_wrapper.lastChild);
+    }
+
+    setActiveList(closest_list_elem, selected_list_id);
+    
+    console.log(active_list);
+    loadTasks(active_list);
 });

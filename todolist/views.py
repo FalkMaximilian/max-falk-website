@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import IntegrityError
 
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
@@ -183,11 +184,14 @@ def api_task_delete(request, taskpk):
 
 @api_view(['POST'])
 def api_list_create(request):
-    serializer = TodoListSerializer(data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
+    new_list = TodoList(owner=request.user, title=request.data['title'])
+    try:
+        new_list.save()
+    except IntegrityError:
+        return Response('Could not create entry!', status=400)
     
+    serializer = TodoListSerializer(new_list)
     return Response(serializer.data)
 
 
@@ -196,4 +200,4 @@ def api_list_delete(request, listpk):
     list_to_del = TodoList.objects.get(pk=listpk)
     list_to_del.delete()
 
-    return Response('List was deleted!')
+    return Response('list successfully deleted!')

@@ -14,7 +14,7 @@
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasResponsiveLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss='offcanvas'
-                    data-bs-target='#offcanvasResponsive' aria-label="close"></button>
+                    data-bs-target='#offcanvasResponsive' aria-label="close" id="closeOffcanvasBtn"></button>
             </div>
             <div id='offcanvasBody' class="offcanvas-body p-2 pt-lg-4 px-lg-3 vstack">
                 <div class="container-fluid pb-2 hstack">
@@ -36,8 +36,8 @@
     </aside>
     <main class="d-flex flex-grow-1 flex-column p-0 m-0">
         <div class="hstack mb-3 pt-4 px-3">
-            <a class="me-2 d-lg-none icon-link fs-1" data-bs-toggle="offcanvas" aria-controls="offcanvasResponsive"
-                data-bs-target="#offcanvasResponsive">
+            <a class="me-2 d-lg-none icon-link fs-1 offcanvas-toggler" data-bs-toggle="offcanvas"
+                aria-controls="offcanvasResponsive" data-bs-target="#offcanvasResponsive">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-list"
                     viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
@@ -78,7 +78,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="newListModalSubmitBtn">Create</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        id="newListModalSubmitBtn">Create</button>
                 </div>
             </div>
         </div>
@@ -104,36 +105,33 @@
     </div>
 
     <!-- New task Modal -->
-    <form action="{% url 'Todolist:todo-newtask' selected_list.pk %}" method="POST" id="new-list-form">
-        {% csrf_token %}
-        <div class="modal" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Create new task</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Create new task</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating mb-2">
+                        <input id="floatingInputName" class="form-control" name='task-name' placeholder="name"
+                            required />
+                        <label for="floatingInputName">Task name</label>
                     </div>
-                    <div class="modal-body">
-                        <div class="form-floating mb-2">
-                            <input id="floatingInputName" class="form-control" name='task-name' placeholder="name"
-                                required />
-                            <label for="floatingInputName">Task name</label>
-                        </div>
-                        <div class="form-floating">
-                            <textarea id="floatingInputDesc" class="form-control" name='task-description'
-                                placeholder="description" style="height: 100px;"></textarea>
-                            <label for="floatingInputDesc">Task description</label>
-                        </div>
+                    <div class="form-floating">
+                        <textarea id="floatingInputDesc" class="form-control" name='task-description'
+                            placeholder="description" style="height: 100px;"></textarea>
+                        <label for="floatingInputDesc">Task description</label>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" value="SUBMIT" class="btn btn-primary">Create</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        id="newTaskModalSubmitBtn">Create</button>
                 </div>
             </div>
         </div>
-    </form>
-
+    </div>
 </div>
 <script src="{% static 'js/delete_modal.js' %}"></script>
 {% endblock content %}

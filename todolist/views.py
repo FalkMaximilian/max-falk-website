@@ -157,11 +157,19 @@ def api_task_detail(request, taskpk):
 
 @api_view(['POST'])
 def api_task_create(request):
-    serializer = TaskSerializer(data=request.data)
-
-    if serializer.is_valid():
-        serializer.save()
+    todo_list = TodoList.objects.get(pk=request.data['list'])
+    if not todo_list:
+        return Response('Tasks can only be added to exisiting lists!')
+    if todo_list.owner == request.user:
+        return Response('You can only add tasks to your own shopping lists')
     
+    new_task = Task(list=todo_list, title=request.data['title'], description=request.data['description'], status=request.data['status'])
+    try:
+        new_task.save()
+    except IntegrityError:
+        return Response('Could not create task!', status=400)
+    
+    serializer = TaskSerializer(new_task)
     return Response(serializer.data)
 
 @api_view(['POST'])

@@ -1,4 +1,4 @@
-const base_url = "http://192.168.1.117:8000/todo/api/";
+const base_url = "http://192.168.1.110:8000/todo/api/";
 
 
 const lists_wrapper = document.getElementById("lists-wrapper");
@@ -40,6 +40,8 @@ function addListToDom(i) {
     let list_elem = document.createElement('div');
     list_elem.classList.add('nav-item', 'hstack', 'rounded', 'my-1', 'w-100', 'list-elem');
     list_elem.setAttribute('list-id', String(lists[i].id));
+    list_elem.setAttribute('data-bs-dismiss', 'offcanvas');
+    list_elem.setAttribute('data-bs-target', '#offcanvasResponsive');
 
     // List label button
     let list_title_btn = document.createElement('button');
@@ -72,10 +74,6 @@ function addListToDom(i) {
 const new_list_modal = document.getElementById('newListModal');
 if (new_list_modal) {
 
-    new_list_modal.addEventListener('show.bs.modal', (event) => {
-    });
-
-
     new_list_modal.addEventListener('click', (event) => {
         let clicked = event.target;
         if (clicked.id == 'newListModalSubmitBtn') {
@@ -96,10 +94,43 @@ if (new_list_modal) {
                     if (resp.ok) {
                         setActiveList(addListToDom(lists.push(parsed_val) - 1), Number(parsed_val.id));
                     }
-                    console.log('COOOOOL!: ', parsed_val)
-                    console.log('COOOOOL!: ', resp.status)
                 })
             })
+        }
+    });
+}
+
+function addTaskToDom(i) {
+    console.log(i);
+}
+
+
+const new_task_modal = document.getElementById('newTaskModal');
+if (new_task_modal) {
+    new_task_modal.addEventListener('click', (event) => {
+        let clicked = event.target;
+        if (clicked.id == 'newTaskModalSubmitBtn') {
+            let task_title_input = document.getElementById('floatingInputName');
+            let new_task_title = String(task_title_input.value);
+            let task_description_input = document.getElementById('floatingInputDesc');
+            let new_task_description = String(task_description_input.value);
+
+            fetch((base_url + 'task-create/'), {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'X-CSRFToken': csrf_token,
+                },
+                body: JSON.stringify({'list': active_list, 'title': new_task_title, 'description': new_task_description, 'status': false})
+            }).then((resp) => {
+                resp.json().then( parsed_val => {
+                    console.log(resp);
+                    if (resp.ok) {
+                        addTaskToDom(tasks.push(parsed_val) - 1);
+                    }
+                })
+            })
+
         }
     });
 }
@@ -149,7 +180,7 @@ function loadLists() {
 let checked_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>';
 let unchecked_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>';
 
-function emptyClass(item) {
+function emptyClassListOf(item) {
     var class_list = item.classList;
     while (class_list.length > 0) {
         class_list.remove(class_list.item(0));
@@ -170,7 +201,7 @@ function loadTasks(listid) {
 
             if (task_list.length == 0) {
 
-                emptyClass(tasks_wrapper);
+                emptyClassListOf(tasks_wrapper);
                 tasks_wrapper.classList.add('d-flex', 'align-items-center', 'no-tasks');
 
                 let container_div = document.createElement('div');
@@ -186,7 +217,7 @@ function loadTasks(listid) {
             }
 
             if (tasks_wrapper.classList.contains('no-tasks')) {
-                emptyClass(tasks_wrapper);
+                emptyClassListOf(tasks_wrapper);
                 tasks_wrapper.classList.add('container-fluid', 'p-0', 'px-3');
             }
 
@@ -320,7 +351,9 @@ function deleteList(list_elem, listid) {
                 }
             }
 
-            // CHECK IF LISTS IS NOW EMPTY.
+            if (lists.length == 0) {
+                
+            }
         }
     })
 }
@@ -339,7 +372,10 @@ lists_wrapper.addEventListener("click", (event) => {
     var closest_del_btn = clicked.closest('.list-del-btn');
     if (closest_del_btn) {
         deleteList(closest_list_elem, selected_list_id);
-        console.log('DELETE LIST ELEM!', selected_list_id);
+        if (selected_list_id == active_list) {
+            let first = lists_wrapper.firstElementChild
+            setActiveList(first, first.getAttribute('list-id'))
+        }
         return;
     }
 

@@ -1,10 +1,45 @@
-const base_url = "http://192.168.1.110:8000/todo/api/";
+// Base URL for REST API
+const base_url = "http://192.168.1.117:8000/todo/api/";
 
-
+// Commonly needed elements
 const lists_wrapper = document.getElementById("lists-wrapper");
 const tasks_wrapper = document.getElementById('tasks');
-
+const new_task_modal = document.getElementById('newTaskModal');
+const new_list_modal = document.getElementById('newListModal');
 const deleteModal = document.getElementById("deleteModal");
+
+// ID of the currently selected list
+var active_list = -1;
+
+// Keep JSON of lists and tasks
+var lists = [];
+var tasks = [];
+
+// SVGs needed for UI.
+let checked_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>';
+let unchecked_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>';
+let cross_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
+
+
+// Get a cookie by name and return null if not found
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// CSRF token needed for Django post requests
+var csrf_token = getCookie('csrftoken');
+
 
 if (deleteModal) {
     deleteModal.addEventListener("show.bs.modal", (event) => {
@@ -71,7 +106,7 @@ function addListToDom(i) {
     return list_elem;
 }
 
-const new_list_modal = document.getElementById('newListModal');
+
 if (new_list_modal) {
 
     new_list_modal.addEventListener('click', (event) => {
@@ -101,11 +136,11 @@ if (new_list_modal) {
 }
 
 function addTaskToDom(i) {
-    console.log(i);
+
 }
 
 
-const new_task_modal = document.getElementById('newTaskModal');
+
 if (new_task_modal) {
     new_task_modal.addEventListener('click', (event) => {
         let clicked = event.target;
@@ -126,6 +161,8 @@ if (new_task_modal) {
                 resp.json().then( parsed_val => {
                     console.log(resp);
                     if (resp.ok) {
+                        loadLists();
+                        loadTasks(active_list);
                         addTaskToDom(tasks.push(parsed_val) - 1);
                     }
                 })
@@ -134,31 +171,6 @@ if (new_task_modal) {
         }
     });
 }
-
-
-var active_list = -1;
-
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-var csrf_token = getCookie('csrftoken');
-
-var lists = [];
-var tasks = [];
-
-let cross_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
 
 function loadLists() {
     const lists_wrapper = document.getElementById("lists-wrapper");
@@ -177,8 +189,6 @@ function loadLists() {
         });
 }
 
-let checked_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>';
-let unchecked_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>';
 
 function emptyClassListOf(item) {
     var class_list = item.classList;

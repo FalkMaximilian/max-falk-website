@@ -8,6 +8,8 @@ from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication
 
+from datetime import datetime
+
 from .serializers import TaskSerializer, TodoListSerializer
 from .models import *
 
@@ -19,13 +21,13 @@ LOGIN = 'Base:login-user'
 def todo_home(request):
     context = {}
 
-    lists = TodoList.objects.filter(owner=request.user)
+    lists = List.objects.filter(owner=request.user)
     if lists.count() != 0:
         context['lists'] = lists
         pk = lists.first().pk
         return HttpResponseRedirect('{}/'.format(pk))
 
-    default_list = TodoList(owner=request.user, title=(str(request.user.username).capitalize() + 's list'))
+    default_list = List(owner=request.user, title=(str(request.user.username).capitalize() + 's list'))
     default_list.save()
     
     default_task = Task(title="Add your own tasks!", list=default_list, description="Press the blue button to create a new task. You can also set an optional description!")
@@ -67,7 +69,7 @@ def todo_newlist(request):
         if title.isspace():
             return redirect(HOME)
 
-        todo_list = TodoList(owner=request.user, title=title)
+        todo_list = List(owner=request.user, title=title)
         todo_list.save()
 
         return HttpResponseRedirect('/todo/{}/'.format(todo_list.pk))
@@ -76,8 +78,8 @@ def todo_newlist(request):
 @login_required(login_url=LOGIN)
 def todo_delete_list(request, listpk):
     try:
-        list_to_delete = TodoList.objects.get(pk=listpk)
-    except TodoList.DoesNotExist:
+        list_to_delete = List.objects.get(pk=listpk)
+    except List.DoesNotExist:
         return redirect(HOME)
         
     if list_to_delete.owner == request.user:
@@ -89,14 +91,14 @@ def todo_delete_list(request, listpk):
 def todo_list_view(request, listpk):
     context = {'activepk': listpk}
 
-    lists = TodoList.objects.filter(owner=request.user)
+    lists = List.objects.filter(owner=request.user)
     if lists.count() == 0:
         return redirect('Base:home')
     
     context['lists'] = lists
     try:
-        selected_list = TodoList.objects.get(pk=listpk)
-    except TodoList.DoesNotExist:
+        selected_list = List.objects.get(pk=listpk)
+    except List.DoesNotExist:
         # Replace with 404
         return redirect('Base:home')
     
@@ -118,8 +120,8 @@ def todo_newtask(request, listpk):
             return redirect(HOME)
 
         try:            
-            task_list = TodoList.objects.get(pk=listpk)
-        except TodoList.DoesNotExist:
+            task_list = List.objects.get(pk=listpk)
+        except List.DoesNotExist:
             return redirect(HOME)
         
         new_task = Task(title=task_name, list=task_list, description=task_desc)
@@ -139,7 +141,7 @@ def api_tasks(request):
 
 @api_view(['GET'])
 def api_list_list(request):
-    lists = TodoList.objects.filter(owner=request.user)
+    lists = List.objects.filter(owner=request.user).order_by('-last_modified')
     serializer = TodoListSerializer(lists, many = True)
     return Response(serializer.data)
 
@@ -157,11 +159,11 @@ def api_task_detail(request, taskpk):
 
 @api_view(['POST'])
 def api_task_create(request):
-    todo_list = TodoList.objects.get(pk=request.data['list'])
+    todo_list = List.objects.get(pk=request.data['list'])
     if not todo_list:
-        return Response('Tasks can only be added to exisiting lists!')
-    if todo_list.owner == request.user:
-        return Response('You can only add tasks to your own shopping lists')
+        return Response('Tasks can only be added to exisiting lists!', status=400)
+    if todo_list.owner != request.user:
+        return Response('You can only add tasks to your own shopping lists', status=403)
     
     new_task = Task(list=todo_list, title=request.data['title'], description=request.data['description'], status=request.data['status'])
     try:
@@ -169,6 +171,7 @@ def api_task_create(request):
     except IntegrityError:
         return Response('Could not create task!', status=400)
     
+    todo_list.save()
     serializer = TaskSerializer(new_task)
     return Response(serializer.data)
 
@@ -193,7 +196,7 @@ def api_task_delete(request, taskpk):
 @api_view(['POST'])
 def api_list_create(request):
 
-    new_list = TodoList(owner=request.user, title=request.data['title'])
+    new_list = List(owner=request.user, title=request.data['title'])
     try:
         new_list.save()
     except IntegrityError:
@@ -205,7 +208,7 @@ def api_list_create(request):
 
 @api_view(['DELETE'])
 def api_list_delete(request, listpk):
-    list_to_del = TodoList.objects.get(pk=listpk)
+    list_to_del = List.objects.get(pk=listpk)
     list_to_del.delete()
 
     return Response('list successfully deleted!')

@@ -2,10 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 
-class TodoList(models.Model):
+class List(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='todolist_owner')
     participants = models.ManyToManyField(User, related_name='todolist_participants')
     title = models.CharField(max_length=50, null=False)
+    last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "todo list"
@@ -15,12 +16,9 @@ class TodoList(models.Model):
     def __str__(self):
         return str(self.owner) + "'s list " + str(self.title)
 
-    def get_absolute_url(self):
-        return reverse("_detail", kwargs={"pk": self.pk})
-
 
 class Task(models.Model):
-    list = models.ForeignKey(TodoList, on_delete=models.CASCADE)
+    list = models.ForeignKey(List, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     description = models.TextField(null=True)
     status = models.BooleanField(default=False)

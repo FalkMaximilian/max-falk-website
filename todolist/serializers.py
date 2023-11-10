@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TodoList, Task
+from .models import List, Task
 from rest_framework.fields import CurrentUserDefault
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -11,5 +11,5 @@ class TaskSerializer(serializers.ModelSerializer):
 class TodoListSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = TodoList
+        model = List
         fields = '__all__'

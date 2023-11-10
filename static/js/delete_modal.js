@@ -106,6 +106,19 @@ function addListToDom(i) {
     return list_elem;
 }
 
+// Removes all list elements from the DOM
+function emptyListDom() {
+    while (lists_wrapper.firstChild) {
+        lists_wrapper.removeChild(lists_wrapper.lastChild);
+    }
+}
+
+// Removes all task elements from the DOM
+function emptyTaskDom() {
+    while (tasks_wrapper.firstChild) {
+        tasks_wrapper.removeChild(tasks_wrapper.lastChild);
+    }
+}
 
 if (new_list_modal) {
 
@@ -127,7 +140,8 @@ if (new_list_modal) {
                 resp.json().then( parsed_val => {
                     // Add to DOM and to lists array
                     if (resp.ok) {
-                        setActiveList(addListToDom(lists.push(parsed_val) - 1), Number(parsed_val.id));
+                        active_list = parsed_val.id;
+                        loadLists();
                     }
                 })
             })
@@ -135,12 +149,7 @@ if (new_list_modal) {
     });
 }
 
-function addTaskToDom(i) {
-
-}
-
-
-
+// Create a new task
 if (new_task_modal) {
     new_task_modal.addEventListener('click', (event) => {
         let clicked = event.target;
@@ -162,8 +171,6 @@ if (new_task_modal) {
                     console.log(resp);
                     if (resp.ok) {
                         loadLists();
-                        loadTasks(active_list);
-                        addTaskToDom(tasks.push(parsed_val) - 1);
                     }
                 })
             })
@@ -172,16 +179,17 @@ if (new_task_modal) {
     });
 }
 
+// Loads the lists
 function loadLists() {
-    const lists_wrapper = document.getElementById("lists-wrapper");
 
     const lists_url = base_url + "list-list/";
+    lists.length = 0;
+    emptyListDom();
 
     fetch(lists_url)
         .then((resp) => resp.json())
         .then(function (data) {
             console.log("loadLists JSON Data: ", data);
-
             lists = data;
             for (var i in lists) {
                 addListToDom(i);
@@ -189,7 +197,7 @@ function loadLists() {
         });
 }
 
-
+// Removes all classes from the element given as input
 function emptyClassListOf(item) {
     var class_list = item.classList;
     while (class_list.length > 0) {
@@ -197,10 +205,14 @@ function emptyClassListOf(item) {
     }
 }
 
+// Loads all tasks for a specific list. 
 function loadTasks(listid) {
     const tasks_wrapper = document.getElementById("tasks");
 
     let tasks_url = base_url + "task-list/" + String(listid) + "/";
+
+    tasks.length = 0;
+    emptyTaskDom()
 
     fetch(tasks_url)
         .then((resp) => resp.json())
@@ -300,7 +312,8 @@ function loadTasks(listid) {
 
 loadLists();
 
-
+// Toggles the status for a tasks.
+// NOT YET ON SERVER SIDE
 function toggleTaskStatus(checkmark_div, taskid) {
 
     let toggle_status_url = base_url + 'task-update/' + String(taskid) + '/';
@@ -316,15 +329,7 @@ function toggleTaskStatus(checkmark_div, taskid) {
         checkmark_div.innerHTML = checked_svg;
         checkmark_div.classList.add('checked-green');
     }
-
-
 }
-
-function selectList(item) {
-
-}
-
-
 
 tasks_wrapper.addEventListener('click', (event) => {
     let clicked = event.target;
@@ -368,10 +373,12 @@ function deleteList(list_elem, listid) {
     })
 }
 
+// Decide what happens when a lists gets clicked
 lists_wrapper.addEventListener("click", (event) => {
     var clicked = event.target;
-
     var closest_list_elem = clicked.closest('.list-elem');
+
+    // If click was outside of an actual element
     if (!closest_list_elem) {
         console.log('clicked outside of list elem');
         return;
@@ -379,6 +386,7 @@ lists_wrapper.addEventListener("click", (event) => {
 
     let selected_list_id = Number(closest_list_elem.getAttribute('list-id'));
 
+    // If the delele btn was pressed this should not be null
     var closest_del_btn = clicked.closest('.list-del-btn');
     if (closest_del_btn) {
         deleteList(closest_list_elem, selected_list_id);
@@ -389,18 +397,18 @@ lists_wrapper.addEventListener("click", (event) => {
         return;
     }
 
-    // Normal list selection
+    // The list that is active has been selected - do nothing
     if (selected_list_id == active_list) {
         console.log('Same list!');
         return;
     }
 
-    while (tasks_wrapper.firstChild) {
-        tasks_wrapper.removeChild(tasks_wrapper.lastChild);
-    }
+    // Remova all tasks from the dom as new ones will be loaded
+    emptyTaskDom();
 
+    // Set the new active list
     setActiveList(closest_list_elem, selected_list_id);
     
-    console.log(active_list);
+    // Load the tasks for that list
     loadTasks(active_list);
 });

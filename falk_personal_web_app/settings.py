@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base.apps.BaseConfig',
     'todolist.apps.TodolistConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -144,7 +145,11 @@ else:
     DJANGO_SUPERUSER_USERNAME = 'admin'
     DJANGO_SUPERUSER_PASSWORD = 'deepthought'
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
 
 
 # Password validation

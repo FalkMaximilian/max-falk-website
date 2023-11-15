@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'base.apps.BaseConfig',
     'todolist.apps.TodolistConfig',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +60,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware'
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'falk_personal_web_app.urls'
@@ -151,6 +154,7 @@ REST_FRAMEWORK = {
     ]
 }
 
+CORS_ALLOWED_ORIGINS = ["https://falkmaximilian.de", "https://falkmaximilian.com"]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

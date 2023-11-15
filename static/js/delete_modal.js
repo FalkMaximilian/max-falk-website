@@ -1,5 +1,5 @@
 // Base URL for REST API
-const base_url = 'http://192.168.1.117:8000/todo/api/';
+const base_url = 'https://falkmaximilian.de/todo/api/';
 
 // Commonly needed elements
 const lists_wrapper = document.getElementById('lists-wrapper');
@@ -76,7 +76,7 @@ if (deleteModal) {
                     method: 'DELETE',
                     headers: {
                         'Content-type': 'application/json',
-                        'X-CSRFToken': csrf_token,
+                        loadTasks  'X-CSRFToken': csrf_token,
                     }
                 }).then(response => {
                     if (response.ok) {

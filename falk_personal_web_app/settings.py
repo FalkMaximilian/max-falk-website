@@ -154,6 +154,8 @@ REST_FRAMEWORK = {
     ]
 }
 
+CORS_ALLOW_CREDENTIALS: True
+
 CORS_ALLOWED_ORIGINS = [
     "https://falkmaximilian.de",
     "https://www.falkmaximilian.de",

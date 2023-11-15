@@ -154,9 +154,11 @@ REST_FRAMEWORK = {
     ]
 }
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.falkmaximilian.de$",
-    r"^https://\w+\.falkmaximilian.com$",
+CORS_ALLOWED_ORIGINS = [
+    "https://falkmaximilian.de",
+    "https://www.falkmaximilian.de",
+    "https://falkmaximilian.com",
+    "https://www.falkmaximilian.com",
 ]
 
 # Password validation

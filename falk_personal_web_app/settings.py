@@ -49,11 +49,9 @@ INSTALLED_APPS = [
     'base.apps.BaseConfig',
     'todolist.apps.TodolistConfig',
     'rest_framework',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -152,16 +150,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
-
-CORS_ALLOW_CREDENTIALS: True
-SESSION_COOKIE_SAMESITE = 'None'
-
-CORS_ALLOWED_ORIGINS = [
-    "https://falkmaximilian.de",
-    "https://www.falkmaximilian.de",
-    "https://falkmaximilian.com",
-    "https://www.falkmaximilian.com",
-]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

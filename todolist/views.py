@@ -23,9 +23,8 @@ def todo_home(request):
 
     lists = List.objects.filter(owner=request.user)
     if lists.count() != 0:
-        context['lists'] = lists
         pk = lists.first().pk
-        return HttpResponseRedirect('{}/'.format(pk))
+        return render(request, 'todolist/todo_home.html', {})
 
     default_list = List(owner=request.user, title=(str(request.user.username).capitalize() + 's list'))
     default_list.save()
@@ -33,104 +32,7 @@ def todo_home(request):
     default_task = Task(title="Add your own tasks!", list=default_list, description="Press the blue button to create a new task. You can also set an optional description!")
     default_task.save()
 
-    return HttpResponseRedirect('{}/'.format(default_list.pk))
-
-@login_required(login_url=LOGIN)
-def todo_delete_task(request, listpk, taskpk):
-
-    try:
-        task_to_delete = Task.objects.get(pk=taskpk)
-    except Task.DoesNotExist:
-        return redirect(HOME)
-    
-    if task_to_delete.list.owner == request.user:
-        task_to_delete.delete()
-        
-    return HttpResponseRedirect('/todo/{}/'.format(listpk))
-
-@login_required(login_url=LOGIN)
-def todo_togglestatus_task(request, listpk, taskpk):
-
-    try:
-        task = Task.objects.get(pk=taskpk)
-    except Task.DoesNotExist:
-        return redirect(HOME)
-    
-    if task.list.owner == request.user:
-        task.status = not task.status
-        task.save()
-
-    return HttpResponseRedirect('/todo/{}/'.format(listpk))
-
-@login_required(login_url=LOGIN)
-def todo_newlist(request):
-    if request.method == 'POST':
-        title = request.POST.get('list-name')
-        if title.isspace():
-            return redirect(HOME)
-
-        todo_list = List(owner=request.user, title=title)
-        todo_list.save()
-
-        return HttpResponseRedirect('/todo/{}/'.format(todo_list.pk))
-    return redirect(HOME)
-
-@login_required(login_url=LOGIN)
-def todo_delete_list(request, listpk):
-    try:
-        list_to_delete = List.objects.get(pk=listpk)
-    except List.DoesNotExist:
-        return redirect(HOME)
-        
-    if list_to_delete.owner == request.user:
-        list_to_delete.delete()
-
-    return redirect(HOME)
-
-@login_required(login_url=LOGIN)
-def todo_list_view(request, listpk):
-    context = {'activepk': listpk}
-
-    lists = List.objects.filter(owner=request.user)
-    if lists.count() == 0:
-        return redirect('Base:home')
-    
-    context['lists'] = lists
-    try:
-        selected_list = List.objects.get(pk=listpk)
-    except List.DoesNotExist:
-        # Replace with 404
-        return redirect('Base:home')
-    
-    if selected_list.owner != request.user:
-        return redirect(HOME)
-
-    context['selected_list'] = selected_list
-    context['tasks'] = selected_list.task_set.all()
-    
-    return render(request, 'todolist/todo_home.html', context)
-
-@login_required(login_url=LOGIN)
-def todo_newtask(request, listpk):
-
-    if request.method == 'POST':
-        task_name = request.POST.get('task-name')
-        task_desc = request.POST.get('task-description')
-        if task_name.isspace():
-            return redirect(HOME)
-
-        try:            
-            task_list = List.objects.get(pk=listpk)
-        except List.DoesNotExist:
-            return redirect(HOME)
-        
-        new_task = Task(title=task_name, list=task_list, description=task_desc)
-        new_task.save()
-
-        return HttpResponseRedirect('/todo/{}/'.format(listpk))
-    
-    return redirect(HOME)
-
+    return render(request, 'todolist/todo_home.html', {})
 
 
 @api_view(['GET'])
@@ -159,9 +61,11 @@ def api_task_detail(request, taskpk):
 
 @api_view(['POST'])
 def api_task_create(request):
-    todo_list = List.objects.get(pk=request.data['list'])
-    if not todo_list:
+    try:
+        todo_list = List.objects.get(pk=request.data['list'])
+    except List.DoesNotExist:
         return Response('Tasks can only be added to exisiting lists!', status=400)
+    
     if todo_list.owner != request.user:
         return Response('You can only add tasks to your own shopping lists', status=403)
     
@@ -192,6 +96,23 @@ def api_task_delete(request, taskpk):
     task.delete()
 
     return Response("Task successfully deleted!")
+
+@api_view(['UPDATE'])
+def api_task_toggle_status(request, taskpk):
+
+    try:
+        task = Task.objects.get(pk=taskpk)
+    except Task.DoesNotExist:
+        return Response("Task with such id does not exists!", status=400)
+    
+    # Same error as above on purpose. Do not leak that another user may own a task with this id
+    if (task.list.owner != request.user):
+        return Response("Task with such id does not exists!", status=400)
+    
+    task.status = not task.status
+    task.save()
+    task.list.save()
+    return Response()
 
 @api_view(['POST'])
 def api_list_create(request):

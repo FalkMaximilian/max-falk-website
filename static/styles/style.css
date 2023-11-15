@@ -4,7 +4,7 @@ body {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    min-height: 100%;
+    height: 100%;
 }
 
 .bi {
@@ -149,6 +149,10 @@ body {
 }
 
 @media (min-width: 992px) {
+    body {
+        height: 100vh;
+    }
+
     .sidebar-layout {
         display: grid;
         grid-template-areas: 'sidebar main';
@@ -171,28 +175,6 @@ body {
 
 .task-container {
     text-decoration: none;
-}
-
-.task-container > .icon {
-    mask: url(../images/circle.svg);
-    mask-size: cover;
-    background-color: white;
-    min-width: 24px;
-    width: 24px;
-    height: 24px;
-}
-
-.checked {
-    text-decoration: line-through;
-}
-
-.checked > .icon {
-    mask: url(../images/check-circle-fill.svg);
-    mask-size: cover;
-    background-color: lightseagreen;
-    min-width: 24px;
-    width: 24px;
-    height: 24px;
 }
 
 .checked-green {

@@ -1,12 +1,13 @@
 // Base URL for REST API
-const base_url = "http://192.168.1.117:8000/todo/api/";
+const base_url = 'http://192.168.1.117:8000/todo/api/';
 
 // Commonly needed elements
-const lists_wrapper = document.getElementById("lists-wrapper");
+const lists_wrapper = document.getElementById('lists-wrapper');
 const tasks_wrapper = document.getElementById('tasks');
 const new_task_modal = document.getElementById('newTaskModal');
 const new_list_modal = document.getElementById('newListModal');
-const deleteModal = document.getElementById("deleteModal");
+const deleteModal = document.getElementById('deleteModal');
+const listTitleHeading = document.getElementById('listTitleHeading');
 
 // ID of the currently selected list
 var active_list = -1;
@@ -44,29 +45,129 @@ var csrf_token = getCookie('csrftoken');
 if (deleteModal) {
     deleteModal.addEventListener("show.bs.modal", (event) => {
         const button = event.relatedTarget;
-        const taskid = button.getAttribute("data-bs-taskid");
-        const tasktitle =
-            button.previousElementSibling.querySelector(".tasktitle").innerHTML;
+        var closest;
 
-        const modalTitle = deleteModal.querySelector("#delete-modal-message");
-        const confirmButton = deleteModal.querySelector(".btn-danger");
+        let modalTitle = deleteModal.querySelector('.modal-title');
+        let modalMessage = deleteModal.querySelector('#delete-modal-message');
+        let modalSubmitBtn = document.getElementById('deleteModalSubmitBtn');
 
-        modalTitle.textContent = `Are you sure you want to delete '${tasktitle}' ?`;
-        confirmButton.href = `delete-task/${taskid}/`;
+        // Depending on what invoked the deletion modal
+        if (closest = button.closest('.task-container')) {
+            let task_id = Number(closest.getAttribute('task-id'));
+            let task_title = closest.querySelector('.task-title').innerHTML;
+            modalTitle.textContent = `Delete Task`;
+            modalSubmitBtn.setAttribute('task-id', String(task_id));
+            modalMessage.textContent = `Are you sure you want to delete the task '${task_title}'?`;
+        } else if (closest = button.closest('.list-elem')) {
+            let list_id = Number(closest.getAttribute('list-id'));
+            let list_name = closest.querySelector('.select-list-item').innerHTML;
+            modalTitle.textContent = `Delete List`;
+            modalSubmitBtn.setAttribute('list-id', String(list_id));
+            modalMessage.textContent = `Are you sure you want to delete the list '${list_name}'?`;
+        }
     });
+
+    deleteModal.addEventListener('click', (event) => {
+        let clicked = event.target;
+        if (clicked.id == 'deleteModalSubmitBtn') {
+            var id = clicked.getAttribute('task-id');
+            if (id) {
+                fetch((base_url + 'task-delete/' + String(id) + '/'), {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'X-CSRFToken': csrf_token,
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        // Successfully deleted task in back-end
+                        console.log(`Successfully deleted task with id ${id} from backend.`);
+
+                        deleteTask(id);
+
+                        if (tasks.length == 0) {
+                            loadTasks(active_list);
+                        }
+                    }
+                })
+                return;
+            }
+
+            id = Number(clicked.getAttribute('list-id'));
+            if (id) {
+                fetch((base_url + 'list-delete/' + String(id) + '/'), {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'X-CSRFToken': csrf_token,
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        // Successfully deleted list in back-end
+                        console.log(`Successfully deleted list with id ${id} from backend.`);
+
+                        // Remove list from DOM
+                        deleteList(id);
+
+                        if (lists.length == 0) {
+                            active_list = -1;
+                            createList('Default List');
+                            return;
+                        }
+                        
+                        if (id == active_list) {
+                            let first = lists_wrapper.firstElementChild;
+                            setActiveList(first, first.getAttribute('list-id'));
+                            loadTasks(Number(first.getAttribute('list-id')));
+                        }
+                    }
+                })
+                return;
+            }
+
+            console.log('Neither task- nor list-id have been found in attributes.');
+        }
+    });
+}
+
+async function createList(listTitle) {
+    fetch((base_url + 'list-create/'), {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json',
+            'X-CSRFToken': csrf_token,
+        },
+        body: JSON.stringify({ 'title': listTitle })
+    }).then((resp) => {
+        resp.json().then(parsed_val => {
+            // Add to DOM and to lists array
+            if (resp.ok) {
+                active_list = parsed_val.id;
+                loadLists();
+            }
+        })
+    })
+}
+
+async function createTask() {
+
 }
 
 function setActiveList(list_elem, new_id) {
     let current_active = document.querySelector(".active-list-item");
-    current_active.classList.remove("active-list-item");
-    current_active.classList.remove("bg-primary");
-    current_active.classList.add("bg-body-tertiary");
+
+    if (current_active) {
+        current_active.classList.remove("active-list-item");
+        current_active.classList.remove("bg-primary");
+        current_active.classList.add("bg-body-tertiary");
+    }
 
     list_elem.classList.add("active-list-item");
     list_elem.classList.remove("bg-body-tertiary");
     list_elem.classList.add("bg-primary");
 
-    active_list = new_id;
+    active_list = Number(new_id);
+    listTitleHeading.textContent = list_elem.firstElementChild.innerHTML;
 }
 
 
@@ -89,6 +190,8 @@ function addListToDom(i) {
     list_delete_btn.classList.add('btn', 'p-0', 'text-body-tertiary', 'icon-link', 'ms-auto', 'me-2', 'fs-3', 'list-del-btn');
     list_delete_btn.type = 'button';
     list_delete_btn.innerHTML = cross_svg;
+    list_delete_btn.setAttribute('data-bs-toggle', 'modal');
+    list_delete_btn.setAttribute('data-bs-target', '#deleteModal');
     list_elem.appendChild(list_delete_btn);
 
     if (active_list == lists[i].id) {
@@ -97,6 +200,7 @@ function addListToDom(i) {
     } else if (active_list == -1) {
         list_elem.classList.add('bg-primary', 'active-list-item');
         active_list = lists[i].id;
+        listTitleHeading.textContent = lists[i].title;
         loadTasks(active_list);
     } else {
         list_elem.classList.add('bg-body-tertiary');
@@ -135,9 +239,9 @@ if (new_list_modal) {
                     'Content-type': 'application/json',
                     'X-CSRFToken': csrf_token,
                 },
-                body: JSON.stringify({'title': new_list_title})
+                body: JSON.stringify({ 'title': new_list_title })
             }).then((resp) => {
-                resp.json().then( parsed_val => {
+                resp.json().then(parsed_val => {
                     // Add to DOM and to lists array
                     if (resp.ok) {
                         active_list = parsed_val.id;
@@ -165,9 +269,9 @@ if (new_task_modal) {
                     'Content-type': 'application/json',
                     'X-CSRFToken': csrf_token,
                 },
-                body: JSON.stringify({'list': active_list, 'title': new_task_title, 'description': new_task_description, 'status': false})
+                body: JSON.stringify({ 'list': active_list, 'title': new_task_title, 'description': new_task_description, 'status': false })
             }).then((resp) => {
-                resp.json().then( parsed_val => {
+                resp.json().then(parsed_val => {
                     console.log(resp);
                     if (resp.ok) {
                         loadLists();
@@ -232,7 +336,7 @@ function loadTasks(listid) {
 
                 let title = document.createElement('h3');
                 title.classList.add('text-center', 'text-body', 'mb-3');
-                title.innerHTML = "You do not have any tasks in this list yet!";
+                title.innerHTML = "No tasks in this list!";
                 container_div.appendChild(title);
 
                 return;
@@ -252,8 +356,10 @@ function loadTasks(listid) {
                     "bg-body-tertiary",
                     "ps-3",
                     "p-2",
-                    "my-2"
+                    "mt-1",
+                    "mb-2"
                 );
+                task_elem.setAttribute('task-id', String(task_list[i].id));
 
                 // Checkmark
                 let checked = document.createElement("div");
@@ -268,7 +374,7 @@ function loadTasks(listid) {
 
                 // Title
                 let task_title = document.createElement("h1");
-                task_title.classList.add("m-0", "pb-2", "fs-5");
+                task_title.classList.add("task-title", "m-0", "pb-2", "fs-5");
                 task_title.innerHTML = task_list[i].title;
                 task_content.appendChild(task_title);
 
@@ -290,6 +396,8 @@ function loadTasks(listid) {
                     "task-del-btn",
                 );
                 task_del_button.setAttribute("type", "button");
+                task_del_button.setAttribute('data-bs-toggle', 'modal');
+                task_del_button.setAttribute('data-bs-target', '#deleteModal')
                 task_del_button.innerHTML =
                     '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
                 task_elem.appendChild(task_del_button);
@@ -312,12 +420,7 @@ function loadTasks(listid) {
 
 loadLists();
 
-// Toggles the status for a tasks.
-// NOT YET ON SERVER SIDE
-function toggleTaskStatus(checkmark_div, taskid) {
-
-    let toggle_status_url = base_url + 'task-update/' + String(taskid) + '/';
-
+function toggleTaskStatusDOM(checkmark_div, taskid) {
     if (checkmark_div.getAttribute('status') == 'true') {
         checkmark_div.setAttribute('status', 'false');
         checkmark_div.parentElement.classList.remove('text-decoration-line-through')
@@ -329,6 +432,24 @@ function toggleTaskStatus(checkmark_div, taskid) {
         checkmark_div.innerHTML = checked_svg;
         checkmark_div.classList.add('checked-green');
     }
+}
+
+// Toggles the status for a tasks.
+function toggleTaskStatus(checkmark_div, taskid) {
+
+    fetch(base_url + 'task-toggle-status/' + String(taskid) + '/', {
+        method: 'UPDATE',
+        headers: {
+            'Content-type': 'text/plain',
+            'X-CSRFToken': csrf_token
+        }
+    }).then((response) => {
+        if (response.ok) {
+            toggleTaskStatusDOM(checkmark_div, taskid);
+        }
+    })
+
+
 }
 
 tasks_wrapper.addEventListener('click', (event) => {
@@ -344,33 +465,46 @@ tasks_wrapper.addEventListener('click', (event) => {
     }
 });
 
-function deleteList(list_elem, listid) {
-    console.log('Delete list with id: ', listid);
+// Removes the list with the given id from the DOM and from global var lists
+function deleteList(listid) {
+    let listWrapperChildren = lists_wrapper.children;
 
-    fetch((base_url + 'list-delete/' + String(listid) + '/'), {
-        method: 'DELETE',
-        headers: {
-            'Content-type': 'application/json',
-            'X-CSRFToken': csrf_token,
-        },
-
-    }).then((response) => {
-        if (response.ok) {
-            lists_wrapper.removeChild(list_elem);
-
-            for (var i in lists) {
-                if (lists[i].id == listid) {
-                    lists.splice(i, 1);
-                    console.log(lists);
-                    break;
-                }
-            }
-
-            if (lists.length == 0) {
-                
-            }
+    // TODO: This could be way easier if list index would be used on frontend instead of list-id
+    for (let i = 0; i < listWrapperChildren.length; i++) {
+        if (Number(listWrapperChildren[i].getAttribute('list-id')) == listid) {
+            lists_wrapper.removeChild(listWrapperChildren[i]);
+            break;
         }
-    })
+    }
+
+    for (var i in lists) {
+        if (lists[i].id == listid) {
+            lists.splice(i, 1);
+            break;
+        }
+    }
+
+    if (listWrapperChildren.length == 0) {
+        loadLists();
+    }
+}
+
+function deleteTask(taskid) {
+    let taskWrapperChildren = tasks_wrapper.children;
+
+    for (let i = 0; i < taskWrapperChildren.length; i++) {
+        if (Number(taskWrapperChildren[i].getAttribute('task-id')) == taskid) {
+            tasks_wrapper.removeChild(taskWrapperChildren[i]);
+            break;
+        }
+    }
+
+    for (var i in tasks) {
+        if (tasks[i].id == taskid) {
+            tasks.splice(i, 1);
+            break;
+        }
+    }
 }
 
 // Decide what happens when a lists gets clicked
@@ -386,14 +520,9 @@ lists_wrapper.addEventListener("click", (event) => {
 
     let selected_list_id = Number(closest_list_elem.getAttribute('list-id'));
 
-    // If the delele btn was pressed this should not be null
+    // Ignore if the del btn was pressed
     var closest_del_btn = clicked.closest('.list-del-btn');
     if (closest_del_btn) {
-        deleteList(closest_list_elem, selected_list_id);
-        if (selected_list_id == active_list) {
-            let first = lists_wrapper.firstElementChild
-            setActiveList(first, first.getAttribute('list-id'))
-        }
         return;
     }
 
@@ -403,12 +532,12 @@ lists_wrapper.addEventListener("click", (event) => {
         return;
     }
 
-    // Remova all tasks from the dom as new ones will be loaded
+    // Remove all tasks from the dom as new ones will be loaded
     emptyTaskDom();
 
     // Set the new active list
     setActiveList(closest_list_elem, selected_list_id);
-    
+
     // Load the tasks for that list
     loadTasks(active_list);
 });

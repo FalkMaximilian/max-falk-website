@@ -154,6 +154,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_CREDENTIALS: True
+SESSION_COOKIE_SAMESITE = 'None'
 
 CORS_ALLOWED_ORIGINS = [
     "https://falkmaximilian.de",

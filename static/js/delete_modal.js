@@ -76,7 +76,7 @@ if (deleteModal) {
                     method: 'DELETE',
                     headers: {
                         'Content-type': 'application/json',
-                        loadTasks  'X-CSRFToken': csrf_token,
+                        'X-CSRFToken': csrf_token,
                     }
                 }).then(response => {
                     if (response.ok) {

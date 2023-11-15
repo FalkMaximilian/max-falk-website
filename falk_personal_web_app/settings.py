@@ -154,7 +154,10 @@ REST_FRAMEWORK = {
     ]
 }
 
-CORS_ALLOWED_ORIGINS = ["https://falkmaximilian.de", "https://falkmaximilian.com"]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.falkmaximilian.de$",
+    r"^https://\w+\.falkmaximilian.com$",
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

@@ -1,5 +1,5 @@
 // Base URL for REST API
-const base_url = 'https://falkmaximilian.de/todo/api/';
+const base_url = 'api/';
 
 // Commonly needed elements
 const lists_wrapper = document.getElementById('lists-wrapper');

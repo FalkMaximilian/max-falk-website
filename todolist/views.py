@@ -107,12 +107,14 @@ def api_task_toggle_status(request, taskpk):
     
     # Same error as above on purpose. Do not leak that another user may own a task with this id
     if (task.list.owner != request.user):
-        return Response("Task with such id does not exists!", status=400)
+        return Response("Task with such id does not exists!", status=404)
     
     task.status = not task.status
     task.save()
     task.list.save()
-    return Response()
+
+    serializer = TaskSerializer(task)
+    return Response(serializer.data)
 
 @api_view(['POST'])
 def api_list_create(request):

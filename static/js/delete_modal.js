@@ -438,7 +438,7 @@ function toggleTaskStatusDOM(checkmark_div, taskid) {
 function toggleTaskStatus(checkmark_div, taskid) {
 
     fetch((base_url + 'task-toggle-status/' + String(taskid) + '/'), {
-        method: 'UPDATE',
+        method: 'PUT',
         headers: {
             'Content-type': 'application/json',
             'X-CSRFToken': csrf_token

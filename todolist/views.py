@@ -97,7 +97,7 @@ def api_task_delete(request, taskpk):
 
     return Response("Task successfully deleted!")
 
-@api_view(['UPDATE'])
+@api_view(['PUT'])
 def api_task_toggle_status(request, taskpk):
 
     try:

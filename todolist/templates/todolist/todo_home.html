@@ -20,7 +20,7 @@
                 <div class="container-fluid pb-2 hstack">
                     <h1 class="me-2 my-0">Your lists</h1>
                     <a class="ms-auto fs-5 icon-link text-decoration-none" data-bs-toggle="modal"
-                        data-bs-target="#newListModal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                        data-bs-target="#createListModal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                             fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
                             <path
                                 d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
@@ -61,8 +61,8 @@
 
 
     <!-- Modals -->
-    <!-- New List Modal -->
-    <div class="modal" id="newListModal" tabindex="-1" aria-labelledby="newListModalLabel" aria-hidden="true">
+    <!-- Create List Modal -->
+    <div class="modal" id="createListModal" tabindex="-1" aria-labelledby="createListModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -71,26 +71,47 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-floating">
-                        <input id="newListTitleInput" class="form-control" name='list-name' placeholder="name"
+                        <input id="createListTitleInput" class="form-control" name='list-name' placeholder="name"
                             required />
-                        <label for="newListTitleInput">List name</label>
+                        <label for="createListTitleInput">List name</label>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                        id="newListModalSubmitBtn">Create</button>
+                        id="createListModalSubmitBtn">Create</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Delete Modal-->
-    <div class="modal" id="deleteModal" tabindex="-1" aria-labelledby="deleteLabel" aria-hidden="true">
+    <!-- Delete List Modal-->
+    <div class="modal" id="deleteListModal" tabindex="-1" aria-labelledby="deleteListLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-danger">Delete</h1>
+                    <h1 class="modal-title fs-5 text-danger">Delete List</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="delete-list-modal-message" class="m-0"></p>
+                    <br>
+                    <p class="m-0">This cannot be undone!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="deleteListModalSubmitBtn">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Task Modal-->
+    <div class="modal" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 text-danger">Delete Task</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -98,7 +119,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="deleteModalSubmitBtn">Delete</a>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="deleteTaskModalSubmitBtn">Delete</a>
                 </div>
             </div>
         </div>
@@ -133,5 +154,5 @@
         </div>
     </div>
 </div>
-<script src="{% static 'js/delete_modal.js' %}"></script>
+<script src="{% static 'js/todo.js' %}"></script>
 {% endblock content %}

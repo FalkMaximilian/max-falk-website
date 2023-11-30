@@ -6,18 +6,21 @@ const apiBaseURL = "api/";
 
 // Commonly needed elements
 const listsWrapperElement = document.getElementById("lists-wrapper");
+const tasksWrapperElement = document.getElementById("tasks-wrapper");
 
 // Modals
 const createListModal = document.getElementById("createListModal");
 const deleteListModal = document.getElementById("deleteListModal");
+const createTaskModal = document.getElementById("createTaskModal");
+const deleteTaskModal = document.getElementById("deleteTaskModal");
 
 
 // Index of the currently selected list
 var selectedList = -1;
-var listToDelete = -1;
 
-// Data about the lists
+// Data about the lists and tasks
 var lists = [];
+var tasks = [];
 
 // SVGs 
 let crossSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
@@ -125,6 +128,8 @@ function selectList(i) {
     newSelectedList.classList.add("bg-primary");
 
     selectedList = i;
+
+    getTasks(selectedList);
 }
 
 // Decide what to do when a list element has been clicked
@@ -142,12 +147,11 @@ const listElementListener = (event) => {
 }
 
 // Create a new list element
-function createNewListElement(id, title) {
+function createNewListElement(title) {
 
     // List container
     let listElement = document.createElement("div");
     listElement.classList.add("nav-item", "hstack", "rounded", "my-1", "w-100", "list-elem", "bg-body-tertiary");
-    listElement.setAttribute("list-id", String(id));
     listElement.setAttribute("data-bs-dismiss", "offcanvas");
     listElement.setAttribute("data-bs-target", "#offcanvasResponsive");
 
@@ -180,7 +184,7 @@ function prependList(newList) {
     }
 
     lists.unshift(newList); // Prepend
-    let listElement = createNewListElement(newList.id, newList.title);
+    let listElement = createNewListElement(newList.title);
     listsWrapperElement.prepend(listElement);
     selectedList += 1;
 }
@@ -192,7 +196,7 @@ function appendList(newList) {
     }
 
     lists.push(newList); // Append
-    let listElement = createNewListElement(newList.id, newList.title);
+    let listElement = createNewListElement(newList.title);
     listsWrapperElement.appendChild(listElement);
 }
 
@@ -240,15 +244,112 @@ async function getLists() {
 }
 
 
+
+
+
+
+
+
+
 /* Tasks */
-function getTasks(index) {
+
+function emptyTasksWrapper() {
+    while (tasksWrapperElement.firstChild) {
+        tasksWrapperElement.removeChild(tasksWrapperElement.lastChild);
+    }
+}
+
+let taskElementListener = (event) => {
+    let clicked = event.target;
+    if (clicked.closest(".task-del-btn")) {
+        DEBUG && console.log("TaskElementListener: Delete button was clicked!");
+        return;
+    }
+
+    // Get index of list withing listsWrapperElement
+    let index = getElementIndex(event.currentTarget);
+    DEBUG && console.log("TaskElementListener: Task index ", index);
+
+    // INCOMPLETE: Toggle the tasks status
+}
+
+function createNewTaskElement(status, title, description) {
+    let taskElement = document.createElement("div");
+    taskElement.classList.add("hstack", "task-container", "rounded", "bg-body-tertiary", "ps-3", "p-2", "mt-1", "mb-2");
+
+    let statusIcon = document.createElement("i");
+    statusIcon.classList.add("icon-link", "fs-4", "status-checkmark", "bi", "bi-circle");
+    taskElement.appendChild(statusIcon);
+
+    let titleDescDiv = document.createElement("div");
+    titleDescDiv.classList.add("ps-2", "pe-4");
+
+    let titleElement = document.createElement("h1");
+    titleElement.classList.add("task-title", "m-0", "pb-2", "fs-5");
+    titleElement.textContent = title;
+    titleDescDiv.appendChild(titleElement);
+
+    let descriptionElement = document.createElement("p");
+    descriptionElement.classList.add("m-0");
+    descriptionElement.textContent = description;
+    titleDescDiv.appendChild(descriptionElement);
+
+    taskElement.appendChild(titleDescDiv);
+
+    let delButton = document.createElement("button");
+    delButton.classList.add("btn", "p-0", "icon-link", "ms-auto", "text-body-tertiary", "fs-3", "task-del-btn");
+    delButton.setAttribute("type", "button");
+    delButton.setAttribute("data-bs-toggle", "modal");
+    delButton.setAttribute("data-bs-target", "#deleteTaskModal");
+    delButton.innerHTML = crossSVG;
+
+    taskElement.appendChild(delButton);
+    taskElement.addEventListener("click", taskElementListener);
+
+    return taskElement;
+}
+
+function prependTask(task) {
+    if (tasks.length == 0) {
+        // INCOMPLETE: If there were no tasks yet we need to remove the 'no tasks' view
+    }
+
+    tasks.unshift(task);
+
+}
+
+function appendTask(task) {
+    if (tasks.length == 0) {
+        // INCOMPLETE: If there were no tasks yet we need to remove the 'no tasks' view
+    }
+
+    tasks.push(task);
+    let taskElement = createNewTaskElement(task.status, task.title, task.description);
+    tasksWrapperElement.appendChild(taskElement);
+}
+
+
+async function getTasks(index) {
 
     if (index < 0 || index >= lists.length) {
         DEBUG && console.log("Invalid index. Cannot retrieve tasks!");
         return;
     }
 
+    const response = await fetch(apiBaseURL + "task-list/" + String(lists[index].id))
 
+    if (!response.ok) {
+        // INCOMPLETE: Let user know that the task list could not be fetched
+        DEBUG && console.log("Something went wrong while fetching task data.");
+        return;
+    }
+
+    const responseData = await response.json();
+    console.log("getTasks(): ", responseData);
+
+    emptyTasksWrapper();
+    tasks.length = 0;
+    responseData.forEach(appendTask);
 }
 
 
@@ -326,6 +427,18 @@ if (deleteListModal) {
         // NOTE: This only deletes the list from memory and DOM. Does not select new list!
         deleteList(listIndex);
     })
+}
+
+
+if (createTaskModal) {
+    createTaskModal.addEventListener("click", (event) => {
+        let clicked = event.target;
+        if (clicked.id == "createTaskModalSubmitBtn") {
+        }
+    })
+}
+
+if (deleteTaskModal) {
 }
 
 getLists();

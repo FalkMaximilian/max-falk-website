@@ -54,7 +54,7 @@
             </a>
         </div>
         <div class="d-flex flex-grow-1 flex-column overflow-auto">
-            <div class="container-fluid p-0 px-3" id="tasks">
+            <div class="container-fluid p-0 px-3" id="tasks-wrapper">
             </div>
         </div>
     </main>
@@ -125,8 +125,8 @@
         </div>
     </div>
 
-    <!-- New task Modal -->
-    <div class="modal" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+    <!-- Create task Modal -->
+    <div class="modal" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -148,7 +148,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                        id="newTaskModalSubmitBtn">Create</button>
+                        id="createTaskModalSubmitBtn">Create</button>
                 </div>
             </div>
         </div>

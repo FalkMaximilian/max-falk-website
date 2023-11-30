@@ -22,6 +22,7 @@ var lists = [];
 // SVGs 
 let crossSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>';
 
+let patchCheckSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-check" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"/><path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911l-1.318.016z"/></svg>';
 
 
 /* Helper functions */
@@ -49,7 +50,7 @@ var csrfToken = getCookie('csrftoken');
 // Get index of element within it's parent
 function getElementIndex(elem) {
     var index = 0;
-    while(elem = elem.previousElementSibling) { ++index }
+    while (elem = elem.previousElementSibling) { ++index }
     return index;
 }
 
@@ -67,6 +68,39 @@ function emptyListsWrapper() {
     }
 }
 
+
+function showNoListsInfo() {
+
+    listsWrapperElement.parentElement.classList.add("flex-grow-1", "flex-column", "h-100");
+    listsWrapperElement.classList.add("d-flex", "h-100");
+
+    let noListsDiv = document.createElement("div");
+    noListsDiv.classList.add("d-flex", "align-items-center", "h-100", "w-100");
+
+    let textDiv = document.createElement("div");
+    textDiv.classList.add("container", "text-center");
+    noListsDiv.appendChild(textDiv)
+
+    let icon = document.createElement("i");
+    icon.classList.add("bi", "bi-patch-check", "fs-1");
+    //icon.setAttribute("style", "font-size: 5rem;")
+    textDiv.appendChild(icon);
+
+    let noListsText = document.createElement("h3");
+    noListsText.classList.add("text-center", "text-body");
+    noListsText.textContent = "No lists!";
+    textDiv.appendChild(noListsText);
+
+    listsWrapperElement.appendChild(noListsDiv);
+}
+
+
+function removeNoListsInfo() {
+    listsWrapperElement.parentElement.classList.remove("flex-grow-1", "flex-column", "h-100");
+    listsWrapperElement.classList.remove("d-flex", "h-100");
+    emptyListsWrapper();
+}
+
 // Select a list by index
 function selectList(i) {
 
@@ -74,7 +108,7 @@ function selectList(i) {
     if (i < 0 || i >= lists.length) {
         DEBUG && console.log("Method selectList(): Invalid Index (" + String(i) + ")!");
         return;
-    } 
+    }
 
     // Change classes on the old selected list
     let oldSelectedList = document.querySelector(".selected-list");
@@ -141,6 +175,10 @@ function createNewListElement(id, title) {
 
 // Prepend a list - Takes JSON as input
 function prependList(newList) {
+    if (lists.length == 0) {
+        removeNoListsInfo();
+    }
+
     lists.unshift(newList); // Prepend
     let listElement = createNewListElement(newList.id, newList.title);
     listsWrapperElement.prepend(listElement);
@@ -149,6 +187,10 @@ function prependList(newList) {
 
 // Append a list - Takes JSON as input
 function appendList(newList) {
+    if (lists.length == 0) {
+        removeNoListsInfo();
+    }
+
     lists.push(newList); // Append
     let listElement = createNewListElement(newList.id, newList.title);
     listsWrapperElement.appendChild(listElement);
@@ -160,13 +202,10 @@ function deleteList(index) {
     lists.splice(index, 1); // Remove 1 item starting from index
     listsWrapperElement.children[index].remove();
 
-
-    DEBUG && console.log("Lists after deletion: ", lists.length);
-    DEBUG && console.log("Lists after deletion: ", lists);
-
     if (lists.length < 1) {
-        // TODO: Show 'no lists text'
+        // TODO: Show 'no lists text' - Clipboard x, exclamation, fire, list-task, patch check
         DEBUG && console.log("No more lists!");
+        showNoListsInfo();
         return;
     }
 
@@ -181,12 +220,10 @@ function deleteList(index) {
 }
 
 
-
 // Get all lists
 async function getLists() {
 
-    // Use await to serialize
-    let response = await fetch(apiBaseURL + "list-list/");
+    const response = await fetch(apiBaseURL + "list-list/");
 
     if (!response.ok) {
         // INCOMPLETE: Notify user that lists could not be fetched.
@@ -196,15 +233,23 @@ async function getLists() {
 
     const responseData = await response.json();
 
-    DEBUG && console.log("Method getLists() received JSON: ", responseData);
-
     emptyListsWrapper();
-    lists = responseData;
-    lists.forEach(appendList);
+    lists.length = 0;
+    responseData.forEach(appendList);
     selectList(0);
 }
 
 
+/* Tasks */
+function getTasks(index) {
+
+    if (index < 0 || index >= lists.length) {
+        DEBUG && console.log("Invalid index. Cannot retrieve tasks!");
+        return;
+    }
+
+
+}
 
 
 
@@ -254,7 +299,7 @@ if (deleteListModal) {
     deleteListModal.addEventListener("show.bs.modal", event => {
         let listIndex = getElementIndex(event.relatedTarget.parentElement);
         let modalMessage = deleteListModal.querySelector("#delete-list-modal-message");
-        
+
         deleteListModalSubmitBtn.setAttribute("list-index", String(listIndex));
         modalMessage.textContent = `'${lists[listIndex].title}' will be deleted.`;
     })
@@ -277,7 +322,7 @@ if (deleteListModal) {
             DEBUG && console.log("NOT OK - DELETE: ", response);
             return;
         }
-        
+
         // NOTE: This only deletes the list from memory and DOM. Does not select new list!
         deleteList(listIndex);
     })

@@ -44,7 +44,7 @@ def api_tasks(request):
 @api_view(['GET'])
 def api_list_list(request):
     lists = List.objects.filter(owner=request.user).order_by('-last_modified')
-    serializer = TodoListSerializer(lists, many = True)
+    serializer = TodoListSerializer(lists, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])

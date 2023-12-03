@@ -259,7 +259,7 @@ function emptyTasksWrapper() {
     }
 }
 
-let taskElementListener = (event) => {
+let taskElementListener = async (event) => {
     let clicked = event.target;
     if (clicked.closest(".task-del-btn")) {
         DEBUG && console.log("TaskElementListener: Delete button was clicked!");
@@ -270,7 +270,22 @@ let taskElementListener = (event) => {
     let index = getElementIndex(event.currentTarget);
     DEBUG && console.log("TaskElementListener: Task index ", index);
 
+
     // INCOMPLETE: Toggle the tasks status
+    let response = await fetch((apiBaseURL + "task-toggle-status/" + String(tasks[index].id) + "/"), {
+        method: 'PUT',
+        headers: {
+            'Content-type': 'application/json',
+            'X-CSRFToken': csrf_token
+        }
+    });
+
+    if (!response.ok) {
+        // INCOMPLETE: Let user know that toggling task status was not successfull.
+        DEBUG && console.log("TASK TOGGLE NOT OK - Could not toggle task status.");
+        return;
+    }
+
 }
 
 function createNewTaskElement(status, title, description) {
@@ -278,7 +293,12 @@ function createNewTaskElement(status, title, description) {
     taskElement.classList.add("hstack", "task-container", "rounded", "bg-body-tertiary", "ps-3", "p-2", "mt-1", "mb-2");
 
     let statusIcon = document.createElement("i");
-    statusIcon.classList.add("icon-link", "fs-4", "status-checkmark", "bi", "bi-circle");
+    statusIcon.classList.add("icon-link", "fs-4", "status-checkmark", "bi");
+    if (status) {
+        statusIcon.classList.add("bi-check-circle-fill", "checked-green");
+    } else {
+        statusIcon.classList.add("bi-circle");
+    }
     taskElement.appendChild(statusIcon);
 
     let titleDescDiv = document.createElement("div");
@@ -315,7 +335,8 @@ function prependTask(task) {
     }
 
     tasks.unshift(task);
-
+    let taskElement = createNewTaskElement(task.status, task.title, task.description);
+    tasksWrapperElement.prepend(taskElement);
 }
 
 function appendTask(task) {
@@ -351,6 +372,10 @@ async function getTasks(index) {
     tasks.length = 0;
     responseData.forEach(appendTask);
 }
+
+
+
+
 
 
 
@@ -431,9 +456,32 @@ if (deleteListModal) {
 
 
 if (createTaskModal) {
-    createTaskModal.addEventListener("click", (event) => {
+    createTaskModal.addEventListener("click", async (event) => {
         let clicked = event.target;
         if (clicked.id == "createTaskModalSubmitBtn") {
+            let taskTitleInput = document.getElementById("createTaskTitleInput");
+            let taskTitle = String(taskTitleInput.value);
+
+            let taskDescriptionInput = document.getElementById("createTaskDescriptionInput");
+            let taskDescription = String(taskDescriptionInput.value);
+
+            let response = await fetch((apiBaseURL + "task-create/"), {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: JSON.stringify({ "title": taskTitle, "description": taskDescription, "status": false, "list": lists[selectedList].id}),
+            });
+
+            if (!response.ok) {
+                // INCOMPLETE: Notify user that new task could not be created!
+                DEBUG && console.log("TASK CREATION NOT OK - POST: ", response);
+            }
+
+            let responseData = await response.json();
+
+            prependTask(responseData);
         }
     })
 }

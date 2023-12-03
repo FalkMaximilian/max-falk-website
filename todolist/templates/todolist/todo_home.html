@@ -45,7 +45,7 @@
                 </svg>
             </a>
             <h1 class="m-0 d-block text-truncate" id="listTitleHeading">{{selected_list.title}}</h1>
-            <a class="ms-auto icon-link fs-2" data-bs-toggle="modal" data-bs-target="#newTaskModal">
+            <a class="ms-auto icon-link fs-2" data-bs-toggle="modal" data-bs-target="#createTaskModal">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor"
                     class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
                     <path
@@ -115,7 +115,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p id="delete-modal-message" class="m-0"></p>
+                    <p id="delete-task-modal-message" class="m-0"></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -135,14 +135,14 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-floating mb-2">
-                        <input id="floatingInputName" class="form-control" name='task-name' placeholder="name"
+                        <input id="createTaskTitleInput" class="form-control" name='task-name' placeholder="name"
                             required />
-                        <label for="floatingInputName">Task name</label>
+                        <label for="createTaskTitleInput">Task name</label>
                     </div>
                     <div class="form-floating">
-                        <textarea id="floatingInputDesc" class="form-control" name='task-description'
+                        <textarea id="createTaskDescriptionInput" class="form-control" name='task-description'
                             placeholder="description" style="height: 100px;"></textarea>
-                        <label for="floatingInputDesc">Task description</label>
+                        <label for="createTaskDescriptionInput">Task description</label>
                     </div>
                 </div>
                 <div class="modal-footer">

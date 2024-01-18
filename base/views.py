@@ -92,7 +92,7 @@ def logout_user(request):
 
 #@login_required(login_url=LOGIN)
 def home_view(request):
-    context = {'timestamp': datetime(year=2023, month=11, day=4, hour=11, minute=40)}
+    context = {'timestamp': datetime(year=2024, month=1, day=18, hour=11, minute=40)}
     return render(request, 'base/home.html', context=context) 
 
 # Give username via the url

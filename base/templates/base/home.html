@@ -97,6 +97,22 @@
     </div>
 </section>
 
+<section class="container-fluid pb-5 justify-content-center" style="z-index: 1;">
+    <div class="card text-center mx-auto" style="max-width: 766px;">
+        <div class="card-header">
+          Featured
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">My Todo-List Is Live!</h5>
+          <p class="card-text">Create several lists and add todos to each one. Uses a <code>REST API</code> on the backend and <code>js</code> on the front-end.</p>
+          <a href="todo/" class="btn btn-primary">Start your own list!</a>
+        </div>
+        <div class="card-footer text-body-secondary">
+            {{timestamp}}
+        </div>
+      </div>
+</section>
+
 <section class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-9 col-11">
@@ -121,6 +137,14 @@
             </section>
             <div>
 
+            <div class="mybox">
+                <h1 class="fs-3">BVG</h1>
+                <h2 class="fs-4">Systemadministrator</h2>
+                <p class="fs-5 pt-3">Betreuung und Wartung von Personalsoftware</p>
+                <p class="fs-5">Automatisierung und optimierung von Prozessen</p>
+                <p class="fs-5">Upgrade von SmartCard Verwaltungssoftware auf neuen Stand</p>
+                <p class="pt-3">1. Dezember 2023 - Heute</p>
+            </div>
             <div class="mybox">
                 <h1 class="fs-3">Apple Inc.</h1>
                 <h2 class="fs-4">Specialist</h2>
@@ -159,31 +183,28 @@
     <img src="{% static 'images/lwh.svg' %}" style="width: 100%;">
 </div> -->
 
-<section class="container-fluid w-100 p-3 bg-body-tertiary" style="z-index: 1;">
-    <div class="card text-center">
-        <div class="card-header">
-          Featured
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">My Todo-List Is Live!</h5>
-          <p class="card-text">It is an early version that still lacks <code>js/ajax</code> and is a little slow still but that will be changed!</p>
-          <a href="todo/" class="btn btn-primary">Start your own list!</a>
-        </div>
-        <div class="card-footer text-body-secondary">
-            {{timestamp}}
-        </div>
-      </div>
-</section>
 
 
+<footer class="container-fluid w-100 bg-body-secondary">
+    <div class="justify-content-center pt-3">
+        <div class="justify-content-center text-center">
+            <a href="github.com"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+              </svg>
+            </a>
+        </div>
+        <p class="text-center">© 2024 Maximilian Falk. All Rights Reserved.</p>
+    </div>
+</footer>
+<!--
 <section style="height: 100vh; position: relative; margin-top: 0px">
-    <!-- <div class="custom-shape-divider-top-1698420714" style="z-index: 1">
+    <div class="custom-shape-divider-top-1698420714" style="z-index: 1">
         <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
             <path
                 d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
                 class="shape-fill"></path>
         </svg>
-    </div> -->
+    </div>
 
     <div id="carouselExampleIndicators" class="carousel slide" style="height: 100vh">
         <div class="carousel-indicators">
@@ -220,4 +241,5 @@
         </button>
     </div>
 </section>
+-->
 {% endblock content %}

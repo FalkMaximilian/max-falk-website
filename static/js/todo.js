@@ -7,6 +7,7 @@ const apiBaseURL = "api/";
 // Commonly needed elements
 const listsWrapperElement = document.getElementById("lists-wrapper");
 const tasksWrapperElement = document.getElementById("tasks-wrapper");
+const listTitleHeading = document.getElementById("listTitleHeading");
 
 // Modals
 const createListModal = document.getElementById("createListModal");
@@ -63,6 +64,10 @@ function getElementIndex(elem) {
 
 
 /* LISTS */
+
+function setListTitleHeading(index) {
+    listTitleHeading.textContent = lists[index].title;
+}
 
 // Removes everything in the lists wrapper
 function emptyListsWrapper() {
@@ -129,6 +134,7 @@ function selectList(i) {
 
     selectedList = i;
 
+    setListTitleHeading(i);
     getTasks(selectedList);
 }
 
@@ -177,6 +183,13 @@ function createNewListElement(title) {
     return listElement;
 }
 
+function moveListToFront(index) {
+    listsWrapperElement.insertBefore(listsWrapperElement.children[index], listsWrapperElement.firstChild);
+    // Move element in array to front
+    lists.unshift(lists.splice(index, 1)[0]);
+    selectedList = 0;
+}
+
 // Prepend a list - Takes JSON as input
 function prependList(newList) {
     if (lists.length == 0) {
@@ -207,7 +220,6 @@ function deleteList(index) {
     listsWrapperElement.children[index].remove();
 
     if (lists.length < 1) {
-        // TODO: Show 'no lists text' - Clipboard x, exclamation, fire, list-task, patch check
         DEBUG && console.log("No more lists!");
         showNoListsInfo();
         return;
@@ -237,6 +249,11 @@ async function getLists() {
 
     const responseData = await response.json();
 
+    if (responseData.length == 0) {
+        showNoListsInfo();
+        return;
+    }
+
     emptyListsWrapper();
     lists.length = 0;
     responseData.forEach(appendList);
@@ -253,10 +270,52 @@ async function getLists() {
 
 /* Tasks */
 
+function showNoTasksInfo() {
+    if (tasksWrapperElement.classList.contains("align-items-center")) {
+        return;
+    }
+
+    tasksWrapperElement.classList.remove("container-fluid", "p-0", "px-3");
+    tasksWrapperElement.classList.add("d-flex", "align-items-center", "no-tasks");
+
+    let noTasksDiv = document.createElement("div");
+    noTasksDiv.classList.add("container");
+
+    let noTasksText = document.createElement("h3");
+    noTasksText.classList.add("text-body", "text-center", "mb-3");
+    noTasksText.textContent = "No tasks in this list!";
+    noTasksDiv.appendChild(noTasksText);
+
+    tasksWrapperElement.appendChild(noTasksDiv);
+}
+
+
+function removeNoTasksInfo() {
+    emptyTasksWrapper();
+    tasksWrapperElement.classList.remove("d-flex", "align-items-center", "no-tasks");
+    tasksWrapperElement.classList.add("container-fluid", "p-0", "px-3");
+}
+
+
 function emptyTasksWrapper() {
     while (tasksWrapperElement.firstChild) {
         tasksWrapperElement.removeChild(tasksWrapperElement.lastChild);
     }
+}
+
+function toggleTaskStatus(index, elem) {
+
+    if (tasks[index].status) {
+        elem.children[1].classList.remove("text-decoration-line-through");
+        elem.firstChild.classList.remove("checked-green", "bi-check-circle-fill");
+        elem.firstChild.classList.add("bi-circle");
+    } else {
+        elem.children[1].classList.add("text-decoration-line-through");
+        elem.firstChild.classList.remove("bi-circle");
+        elem.firstChild.classList.add("checked-green", "bi-check-circle-fill");   
+    }
+    tasks[index].status = !tasks[index].status;
+    moveListToFront(selectedList);
 }
 
 let taskElementListener = async (event) => {
@@ -266,17 +325,17 @@ let taskElementListener = async (event) => {
         return;
     }
 
-    // Get index of list withing listsWrapperElement
-    let index = getElementIndex(event.currentTarget);
+    let taskElem = event.currentTarget;
+
+    // Get index of task withing tasksWrapperElement
+    let index = getElementIndex(taskElem);
     DEBUG && console.log("TaskElementListener: Task index ", index);
 
-
-    // INCOMPLETE: Toggle the tasks status
     let response = await fetch((apiBaseURL + "task-toggle-status/" + String(tasks[index].id) + "/"), {
         method: 'PUT',
         headers: {
             'Content-type': 'application/json',
-            'X-CSRFToken': csrf_token
+            'X-CSRFToken': csrfToken
         }
     });
 
@@ -286,6 +345,7 @@ let taskElementListener = async (event) => {
         return;
     }
 
+    toggleTaskStatus(index, taskElem);
 }
 
 function createNewTaskElement(status, title, description) {
@@ -294,15 +354,18 @@ function createNewTaskElement(status, title, description) {
 
     let statusIcon = document.createElement("i");
     statusIcon.classList.add("icon-link", "fs-4", "status-checkmark", "bi");
-    if (status) {
-        statusIcon.classList.add("bi-check-circle-fill", "checked-green");
-    } else {
-        statusIcon.classList.add("bi-circle");
-    }
+    
     taskElement.appendChild(statusIcon);
 
     let titleDescDiv = document.createElement("div");
     titleDescDiv.classList.add("ps-2", "pe-4");
+
+    if (status) {
+        titleDescDiv.classList.add("text-decoration-line-through");
+        statusIcon.classList.add("bi-check-circle-fill", "checked-green");
+    } else {
+        statusIcon.classList.add("bi-circle");
+    }
 
     let titleElement = document.createElement("h1");
     titleElement.classList.add("task-title", "m-0", "pb-2", "fs-5");
@@ -332,6 +395,7 @@ function createNewTaskElement(status, title, description) {
 function prependTask(task) {
     if (tasks.length == 0) {
         // INCOMPLETE: If there were no tasks yet we need to remove the 'no tasks' view
+        removeNoTasksInfo();
     }
 
     tasks.unshift(task);
@@ -342,11 +406,24 @@ function prependTask(task) {
 function appendTask(task) {
     if (tasks.length == 0) {
         // INCOMPLETE: If there were no tasks yet we need to remove the 'no tasks' view
+        removeNoTasksInfo();
     }
 
     tasks.push(task);
     let taskElement = createNewTaskElement(task.status, task.title, task.description);
     tasksWrapperElement.appendChild(taskElement);
+}
+
+function deleteTask(index) {
+
+    tasks.splice(index, 1); // Remove 1 item starting from index
+    tasksWrapperElement.children[index].remove();
+
+    if (tasks.length < 1) {
+        DEBUG && console.log("No more tasks!");
+        showNoTasksInfo();
+        return;
+    }
 }
 
 
@@ -367,6 +444,12 @@ async function getTasks(index) {
 
     const responseData = await response.json();
     console.log("getTasks(): ", responseData);
+
+    if (responseData.length == 0) {
+        emptyTasksWrapper();
+        showNoTasksInfo();
+        return;
+    }
 
     emptyTasksWrapper();
     tasks.length = 0;
@@ -482,11 +565,45 @@ if (createTaskModal) {
             let responseData = await response.json();
 
             prependTask(responseData);
+            moveListToFront(selectedList);
         }
     })
 }
 
 if (deleteTaskModal) {
+    let deleteTaskModalSubmitBtn = document.getElementById("deleteTaskModalSubmitBtn");
+
+    // Show correct data on modal
+    deleteTaskModal.addEventListener("show.bs.modal", event => {
+        let taskIndex = getElementIndex(event.relatedTarget.parentElement);
+        let modalMessage = deleteTaskModal.querySelector("#delete-task-modal-message");
+
+        deleteTaskModalSubmitBtn.setAttribute("task-index", String(taskIndex));
+        modalMessage.textContent = `'${tasks[taskIndex].title}' will be deleted.`;
+    })
+
+    // Delete button event listener
+    deleteTaskModalSubmitBtn.addEventListener("click", async event => {
+        let taskIndex = event.currentTarget.getAttribute("task-index");
+        let url = apiBaseURL + "task-delete/" + String(tasks[taskIndex].id) + "/";
+
+        let response = await fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Content-type": "application/json",
+                "X-CSRFToken": csrfToken,
+            }
+        });
+
+        if (!response.ok) {
+            // INCOMPLETE: Notifty user that list could not be deleted!
+            DEBUG && console.log("NOT OK - DELETE: ", response);
+            return;
+        }
+
+        // NOTE: This only deletes the list from memory and DOM. Does not select new list!
+        deleteTask(taskIndex);
+    })
 }
 
 getLists();

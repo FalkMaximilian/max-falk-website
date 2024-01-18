@@ -26,12 +26,6 @@ def todo_home(request):
         pk = lists.first().pk
         return render(request, 'todolist/todo_home.html', {})
 
-    default_list = List(owner=request.user, title=(str(request.user.username).capitalize() + 's list'))
-    default_list.save()
-    
-    default_task = Task(title="Add your own tasks!", list=default_list, description="Press the blue button to create a new task. You can also set an optional description!")
-    default_task.save()
-
     return render(request, 'todolist/todo_home.html', {})
 
 
